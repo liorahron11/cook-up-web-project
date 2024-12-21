@@ -1,5 +1,6 @@
 import {JSX} from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import Link from "next/link";
 
 export interface UserAvatarProps {
     src: string;
@@ -19,17 +20,20 @@ export default function UserAvatar({ src }: UserAvatarProps): JSX.Element {
                 </div>
                 <MenuItems transition className="absolute left-0 z-10 mt-2 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in">
                     <MenuItem>
-                        <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none">
-                            המשתמש שלי
-                        </a>
+                        <Link legacyBehavior href="/user-profile">
+                            <a
+                                href="/user-profile"
+                                className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none">
+                                המשתמש שלי
+                            </a>
+                        </Link>
                     </MenuItem>
                     <MenuItem>
-                        <a href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none">
-                            התנתק
-                        </a>
+                        <Link legacyBehavior href="/login">
+                            <a className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none">
+                              התנתק
+                            </a>
+                        </Link>
                     </MenuItem>
                 </MenuItems>
             </Menu>

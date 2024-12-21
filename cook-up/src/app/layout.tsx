@@ -20,11 +20,11 @@ const headerProps: HeaderProps = {
     },
     navbarItems: [
         {
-            href: "#",
+            href: "/",
             text: "דף הבית"
         },
         {
-            href: "#",
+            href: "/create-recipe",
             text: "צור מתכון"
         },
     ]
