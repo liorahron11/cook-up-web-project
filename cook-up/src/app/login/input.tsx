@@ -1,10 +1,12 @@
-import {HTMLInputTypeAttribute} from "react";
+"use client";
+
+import {ChangeEventHandler, HTMLInputTypeAttribute} from "react";
 export interface IInputProps {
     id: string;
     label: string;
     type: HTMLInputTypeAttribute;
     required: boolean;
-    value: string;
+    onChange: ChangeEventHandler<HTMLInputElement>
 }
 
 export default function Input({ inputProps }: { inputProps: IInputProps }) {
