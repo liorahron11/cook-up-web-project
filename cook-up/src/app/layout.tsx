@@ -1,20 +1,33 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Assistant } from "next/font/google";
 import "./globals.css";
+import Header, {HeaderProps} from "@/app/components/navbar/header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const assistant = Assistant({
+  variable: "--font-assistant",
+  subsets: ["hebrew"],
+  weight: '400'
 });
 
 export const metadata: Metadata = {
   title: "CookUp",
   description: "A recipe sharing platform",
+};
+
+const headerProps: HeaderProps = {
+    userAvatarProps: {
+        src: 'https://tecdn.b-cdn.net/img/new/avatars/2.jpg'
+    },
+    navbarItems: [
+        {
+            href: "#",
+            text: "דף הבית"
+        },
+        {
+            href: "#",
+            text: "צור מתכון"
+        },
+    ]
 };
 
 export default function RootLayout({
@@ -23,10 +36,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="he">
+      <body className={assistant.className} dir="rtl">
+      <Header {...headerProps}></Header>
         {children}
       </body>
     </html>
