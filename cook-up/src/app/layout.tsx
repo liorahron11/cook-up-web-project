@@ -1,18 +1,15 @@
-import type { Metadata } from "next";
+'use client'
+
 import { Assistant } from "next/font/google";
 import "./globals.css";
 import Header, {HeaderProps} from "@/app/components/navbar/header";
+import { usePathname } from 'next/navigation';
 
 const assistant = Assistant({
   variable: "--font-assistant",
   subsets: ["hebrew"],
   weight: '400'
 });
-
-export const metadata: Metadata = {
-  title: "CookUp",
-  description: "A recipe sharing platform",
-};
 
 const headerProps: HeaderProps = {
     userAvatarProps: {
@@ -29,16 +26,22 @@ const headerProps: HeaderProps = {
         },
     ]
 };
+const noNavbarRoutes: string[] = ['/login', '/register'];
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
+    const isNoNavbarPage: boolean = noNavbarRoutes.includes(usePathname());
+
+    return (
     <html lang="he">
+    <head>
+        <title>CookUp</title>
+    </head>
       <body className={assistant.className} dir="rtl">
-      <Header {...headerProps}></Header>
+      {!isNoNavbarPage && <Header {...headerProps}></Header>}
         {children}
       </body>
     </html>
