@@ -94,4 +94,29 @@ usersRoutes.put('/:id', async (req, res) => {
     }
 });
 
+usersRoutes.post('/login', async (req, res) => {
+    const user: IUser = req.body.user;
+
+    try {
+        if (user && user.password && user.email) {
+            const userDoc: HydratedDocument<IUser> = await userQueryService.getUserByUsernameAndPassword(user.email, user.password);
+
+            if (userDoc) {
+                res.status(200).send({user: {
+                    id: userDoc.id,
+                    email: userDoc.email,
+                    username: userDoc.username
+                }});
+            } else {
+                res.status(500).send('error finding user');
+            }
+        } else {
+            res.status(500).send('data is invalid');
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+});
+
+
 export default usersRoutes;

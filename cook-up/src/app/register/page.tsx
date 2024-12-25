@@ -6,22 +6,32 @@ import Link from "next/link";
 import RegisterButton from "@/app/register/register-button";
 import React, {useState} from "react";
 import {FieldErrors, FieldValues, useForm} from "react-hook-form";
+import {registerUser} from "@/app/services/rest.service";
+import {useRouter} from "next/navigation";
+import {saveUserToLocalStorage} from "@/app/services/local-storage.service";
+import {IUser} from "@/app/models/user.interface";
+import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 interface IRegisterFormData {
     email: string;
+    username: string;
     password: string;
     confirmPassword: string;
 }
 
 export default function Register() {
+    const router: AppRouterInstance = useRouter();
+
     const [formData, setFormData] = useState<IRegisterFormData>({
         email: '',
+        username: '',
         password: '',
         confirmPassword: '',
     });
 
     const EMAIL_FIELD_ID: string = Object.keys(formData)[0];
-    const PASSWORD_FIELD_ID: string = Object.keys(formData)[1];
-    const CONFIRM_PASSWORD_FIELD_ID: string = Object.keys(formData)[2];
+    const USERNAME_FIELD_ID: string = Object.keys(formData)[1];
+    const PASSWORD_FIELD_ID: string = Object.keys(formData)[2];
+    const CONFIRM_PASSWORD_FIELD_ID: string = Object.keys(formData)[3];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { id, value } = e.target;
@@ -32,8 +42,18 @@ export default function Register() {
     };
 
     const { register, handleSubmit, formState: { errors }, getValues } = useForm({ reValidateMode: 'onSubmit'});
-    const onSubmit = (data: any) => {
-        console.log(data);
+    const onSubmit = (user: IRegisterFormData) => {
+        const userRegisterFields: IUser = {
+            email: user.email,
+            password: user.password,
+            username: user.username
+        }
+
+        registerUser({user: userRegisterFields})
+            .then(() => {
+            saveUserToLocalStorage({email: user.email, username: user.username});
+            router.push('/');
+        });
     };
 
 
@@ -45,6 +65,15 @@ export default function Register() {
             validationFields: {
                 required: true,
                 pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+            },
+            onChange: handleChange
+        },
+        {
+            id: USERNAME_FIELD_ID,
+            label: "שם משתמש",
+            type: "text",
+            validationFields: {
+                required: true
             },
             onChange: handleChange
         },
@@ -74,7 +103,7 @@ export default function Register() {
     ];
 
     const parseErrors = (errors:  FieldErrors<FieldValues>): string => {
-        if (errors[EMAIL_FIELD_ID]?.type === 'required' || errors[PASSWORD_FIELD_ID]?.type === 'required' || errors[CONFIRM_PASSWORD_FIELD_ID]?.type === 'required') {
+        if (errors[EMAIL_FIELD_ID]?.type === 'required' || errors[USERNAME_FIELD_ID]?.type === 'required' || errors[PASSWORD_FIELD_ID]?.type === 'required' || errors[CONFIRM_PASSWORD_FIELD_ID]?.type === 'required') {
             return 'יש למלא את כל השדות על מנת להמשיך';
         } else if (errors[EMAIL_FIELD_ID]?.type === 'pattern') {
             return 'כתובת המייל אינה תקינה';
@@ -102,7 +131,7 @@ export default function Register() {
                         <RegisterButton/>
 
                         <div className="m-auto mt-6 w-fit md:mt-8">
-                            {((errors[EMAIL_FIELD_ID] || errors[PASSWORD_FIELD_ID] || errors[CONFIRM_PASSWORD_FIELD_ID]) &&
+                            {((errors[EMAIL_FIELD_ID] || errors[USERNAME_FIELD_ID] || errors[PASSWORD_FIELD_ID] || errors[CONFIRM_PASSWORD_FIELD_ID]) &&
                                 <span className="m-auto ml-1 text-red-500">
                                     {parseErrors(errors)}
                                 </span>)}

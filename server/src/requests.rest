@@ -86,7 +86,6 @@ Content-Type: application/json
 
 {
 "user": {
-    "id": 10025,
     "username": "israel-israeli",
     "email": "israel@gmail.com",
     "password": "Israel123!!!"

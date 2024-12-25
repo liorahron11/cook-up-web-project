@@ -16,6 +16,10 @@ export class UserQueriesService {
     }
 
     public addUser = async (user: IUser): Promise<boolean> => {
+        if (!user.id) {
+            user.id = Date.now();
+        }
+
         const doc: HydratedDocument<IUser> = new User(user);
         const res: HydratedDocument<IUser> = await doc.save();
 
@@ -42,8 +46,9 @@ export class UserQueriesService {
         }
     }
 
-    public getUserByUsernameAndPassword = async (username: string, password: string): Promise<HydratedDocument<IUser>> => {
-        const user: HydratedDocument<IUser> = await User.findOne({username, password});
+    // TODO: IMPLEMENT JWT AND ENCRYPT PASSWORD
+    public getUserByUsernameAndPassword = async (email: string, password: string): Promise<HydratedDocument<IUser>> => {
+        const user: HydratedDocument<IUser> = await User.findOne({email, password});
 
         if (!user) {
             console.error(`could not find user`);
