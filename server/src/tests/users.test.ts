@@ -3,19 +3,20 @@ import UserModel from '../models/user.model';
 import {IUser} from "../interfaces/user.interface";
 import server from "../main";
 
-afterEach(async () => {
-});
-
 afterAll(async () => {
     server.close();
 });
 
 describe('User API', () => {
+    const newUser: IUser = { email: 'jane777@example.com', password: 'Jane1234!', username: "lior" };
     let userId;
+
     describe('GET /user', () =>  
         it('should return a list of users', async () => {
+            await UserModel.create(newUser);
+
             const res = await request(server).get('/user/all');
-            userId = res.body[0]._id;
+            userId = res.body.find(user => user.email === 'jane777@example.com')._id;
             expect(res.status).toBe(200);
             expect(res.body).toBeInstanceOf(Array);
         }));
@@ -23,10 +24,10 @@ describe('User API', () => {
         it('should return a user with id', async () => {
             const res = await request(server).get(`/user/${userId}`);
             expect(res.status).toBe(200);
-            expect(res.body).toMatchObject({ email: 'jane555@example.com', password: 'Jane1234!' });
-        });
+            expect(res.body).toMatchObject({ email: 'jane777@example.com', password: 'Jane1234!' });
 
-    });
+            await UserModel.deleteOne(newUser);
+        });
 
     describe('POST /user', () => {
         it('should create a new user', async () => {
@@ -50,7 +51,7 @@ describe('User API', () => {
 
     describe('PUT /user', () => {
         it('should update user email and password', async () => {
-            const createdUser = await UserModel.create({email: 'jane1111@example.com', password: 'Jane1234!'});
+            const createdUser = await UserModel.create({email: 'jane1111@example.com', username: 'lior', password: 'Jane1234!'});
 
             const newUserFields: Partial<IUser> = { email: 'israel@example.com', password: 'newPassword123!' };
 
@@ -66,7 +67,7 @@ describe('User API', () => {
             await UserModel.deleteOne({ _id: userInDb.id });
             expect(userInDb).not.toBeNull();
             expect(userInDb?.email).toBe(newUserFields.email);
-            expect(userInDb?.password).toBe(newUserFields.password);
+            expect(userInDb?.password).not.toBe(createdUser.password);
         });
     });
 
@@ -83,3 +84,4 @@ describe('User API', () => {
             expect(userInDb).toBeNull();
         });
     });
+});

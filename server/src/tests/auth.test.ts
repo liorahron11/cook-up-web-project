@@ -1,20 +1,14 @@
 import request from 'supertest';
 import {IUser} from "../interfaces/user.interface";
 import server from "../main";
-import userModel from '../models/user.model';
-import postModel from '../models/post.model';
-
-beforeAll(async () => {
-    console.log("beforeAll");
-    await userModel.deleteMany();
-  });
+import UserModel from "../models/user.model";
 
 afterAll(async () => {
-    console.log("afterAll");
-    await userModel.deleteMany();
-    await postModel.deleteMany();
-    server.close();
-    
+    try {
+        await UserModel.deleteOne({ _id: testUser.id });
+    } finally {
+        server.close();
+    }
 });
 
 const baseUrl = "/auth";

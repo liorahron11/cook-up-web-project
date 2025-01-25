@@ -3,8 +3,7 @@ import PostModel from "../models/post.model";
 import {IPost} from "../interfaces/post.interface";
 import server from "../main";
 import {IUser} from "../interfaces/user.interface";
-import userModel from '../models/user.model';
-import postModel from '../models/post.model';
+import UserModel from '../models/user.model';
 
 const postMock: IPost = {
     "senderId": "155",
@@ -24,20 +23,22 @@ const testUser: User = {
   }
 
 afterAll(async () => {
-    console.log("afterAll");
-    await userModel.deleteMany();
-    await postModel.deleteMany();
-    server.close();
+    try {
+        await PostModel.deleteMany({ content: postMock.content });
+        await UserModel.deleteMany({ email: testUser.email });
+    } finally {
+        server.close();
+    }
 });
 
 beforeAll(async () => {
-    const response = await request(server).post("/auth/register").send(testUser);
-    const response2 = await request(server).post("/auth/login").send(testUser);
-    const accessToken = response2.body.accessToken;
-    const refreshToken = response2.body.refreshToken;
+    await request(server).post("/auth/register").send(testUser);
+    const response = await request(server).post("/auth/login").send(testUser);
+    const accessToken = response.body.accessToken;
+    const refreshToken = response.body.refreshToken;
     testUser.accessToken = accessToken;
     testUser.refreshToken = refreshToken;
-    testUser.id = response2.body._id;
+    testUser.id = response.body._id;
 })
 
 describe('Posts API', () => {
@@ -47,7 +48,7 @@ describe('Posts API', () => {
                 .send({post: postMock})
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
-                .set({ authorization: "JWT " + testUser.accessToken });;
+                .set({ authorization: "JWT " + testUser.accessToken });
 
             expect(res.status).toBe(201);
             expect(res.body.message).toBe('Post added successfully');
@@ -77,10 +78,8 @@ describe('Posts API', () => {
         });
 
         it('should return a post with senderID 155', async () => {
-            await PostModel.create(postMock);
-
             const res = await request(server).get('/posts?sender=155').set(
-                { authorization: "JWT " + testUser.accessToken });;
+                { authorization: "JWT " + testUser.accessToken });
             expect(res.status).toBe(200);
 
             const posts: IPost[] = res.body.map((post: any) => {
@@ -107,6 +106,7 @@ describe('Posts API', () => {
             expect(res.text).toContain('updated successfully');
 
             const postInDb = await PostModel.findOne({ _id: postMock.id });
+            await PostModel.updateOne({ _id: postInDb.id }, { $set: { content: postMock.content } });
             expect(postInDb).not.toBeNull();
             expect(postInDb?.content).toBe(newPostFields.content);
         });

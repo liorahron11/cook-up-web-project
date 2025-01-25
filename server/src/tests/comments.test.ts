@@ -4,8 +4,7 @@ import {IPost} from "../interfaces/post.interface";
 import server from "../main";
 import {IComment} from "../interfaces/comment.interface";
 import {IUser} from "../interfaces/user.interface";
-import userModel from '../models/user.model';
-import postModel from '../models/post.model';
+import UserModel from "../models/user.model";
 
 const postMock: IPost = {
     senderId: "156",
@@ -47,10 +46,12 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-    console.log("afterAll");
-    await userModel.deleteMany();
-    await postModel.deleteMany();
-    server.close();
+    try {
+        await PostModel.deleteMany({ content: postMock.content });
+        await UserModel.deleteMany({ email: testUser.email });
+    } finally {
+        server.close();
+    }
 });
 
 describe('Comments API', () => {
