@@ -1,4 +1,13 @@
-export const stringifyUpdatedUserFields = (isPasswordUpdated: boolean, isUsernameUpdated: boolean, isEmailUpdated: boolean): string => {
+import mongoose from 'mongoose';
+
+
+export const isIdValid = (id: string): boolean => {
+    if (mongoose.Types.ObjectId.isValid(id) && id.length === 24) return true;
+    
+    return false;
+}
+
+export const stringifyUpdatedUserFields = (isPasswordUpdated: boolean, isUsernameUpdated: boolean ,isEmailUpdated: boolean): string => {
     let updatedFields: string = '';
     if (isPasswordUpdated) {
         updatedFields += 'password ';
@@ -9,6 +18,5 @@ export const stringifyUpdatedUserFields = (isPasswordUpdated: boolean, isUsernam
     if (isEmailUpdated) {
         updatedFields += 'email ';
     }
-
     return updatedFields;
 }

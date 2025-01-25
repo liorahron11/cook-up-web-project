@@ -1,4 +1,5 @@
 import isEmail from 'validator/lib/isEmail';
+import isStrongPassword from 'validator/lib/isStrongPassword';
 import {IUser} from "../interfaces/user.interface";
 
 export const isUserValid = (user: IUser): boolean => {
@@ -6,7 +7,7 @@ export const isUserValid = (user: IUser): boolean => {
         throw new Error('user is missing');
     }
 
-    if (!user.username || !user.email || !user.password) {
+    if (!user.username || !user.password || !user.email) {
         throw new Error('missing user fields');
     }
 
@@ -14,8 +15,12 @@ export const isUserValid = (user: IUser): boolean => {
         throw new Error('invalid email');
     }
 
-    if (user.password.toString().length < 6) {
-        throw new Error('password is weak');
+    return true;
+}
+
+export const isLoginValuesValid = (email: string, password: string): boolean => {
+    if (!email || !password || !isEmail(email)) {
+        throw new Error('invalud login fields');
     }
 
     return true;

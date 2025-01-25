@@ -49,7 +49,7 @@ export default function Register() {
             username: user.username
         }
 
-        registerUser({user: userRegisterFields})
+        registerUser(userRegisterFields)
             .then(() => {
             saveUserToLocalStorage({email: user.email, username: user.username});
             router.push('/');

@@ -1,18 +1,16 @@
-import axios, {AxiosInstance} from 'axios';
+import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {IUser} from "@/app/models/user.interface";
-export interface IUserBody {
-    user: Partial<IUser>;
-}
+
 const apiClient: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://localhost:5000',
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-export const registerUser = async (data: IUserBody) => {
+export const registerUser = async (data: Partial<IUser>) => {
     try {
-        const response = await apiClient.post('/user', data);
+        const response = await apiClient.post('/auth/register', data);
         return response.data;
     } catch (error: any) {
         console.error('Error registering user:', error.response.data);
@@ -20,10 +18,10 @@ export const registerUser = async (data: IUserBody) => {
     }
 }
 
-export const userLogin = async (data: IUserBody) => {
+export const userLogin = async (data: Partial<IUser>) => {
     try {
-        const response = await apiClient.post('/user/login', data);
-        return response.data.user;
+        const response: AxiosResponse = await apiClient.post('/auth/login', data);
+        return response.data;
     } catch (error: any) {
         console.error('Error logging in user:', error.response.data);
         throw error;

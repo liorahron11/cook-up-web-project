@@ -9,8 +9,7 @@ import GoogleLoginButton from "@/app/login/google-login-button";
 import Image from "next/image";
 import React, {useState} from "react";
 import {FieldErrors, FieldValues, useForm} from "react-hook-form";
-import {IUser} from "@/app/models/user.interface";
-import {registerUser, userLogin} from "@/app/services/rest.service";
+import {userLogin} from "@/app/services/rest.service";
 import {saveUserToLocalStorage} from "@/app/services/local-storage.service";
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 import {useRouter} from "next/navigation";
@@ -45,7 +44,7 @@ export default function LoginCard() {
             password: user.password,
         }
 
-        userLogin({user: userLoginFields})
+        userLogin(userLoginFields)
             .then((userInfo) => {
                 saveUserToLocalStorage({email: userInfo.email, username: userInfo.username});
                 router.push('/');

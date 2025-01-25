@@ -9,7 +9,14 @@ import {stringifyUpdatedUserFields} from "../services/query-utils";
 const usersRoutes: Router = express.Router();
 const userQueryService: UserQueriesService = new UserQueriesService();
 
-usersRoutes.get('/', async (req, res) => {
+/**
+* @swagger
+* tags:
+*   name: Users
+*   description: The Users API
+*/
+
+usersRoutes.get('/all', async (req, res) => {
     const posts: HydratedDocument<IUser>[] = await userQueryService.getAllUsers();
 
     if (posts) {
@@ -40,7 +47,7 @@ usersRoutes.post('/', async (req, res) => {
 });
 
 usersRoutes.get('/:id', async (req, res) => {
-    const userId: number = Number(req.params.id);
+    const userId: string = req.params.id;
     const user: HydratedDocument<IUser> = await userQueryService.getUserById(userId);
 
     if (user) {
@@ -51,7 +58,7 @@ usersRoutes.get('/:id', async (req, res) => {
 });
 
 usersRoutes.delete('/:id', async (req, res) => {
-    const userId: number = Number(req.params.id);
+    const userId: string = req.params.id;
     const isDeleteSuccess: boolean = await userQueryService.deleteUser(userId);
 
     if (isDeleteSuccess){
@@ -64,7 +71,7 @@ usersRoutes.delete('/:id', async (req, res) => {
 usersRoutes.put('/:id', async (req, res) => {
     let {isPasswordUpdated, isUsernameUpdated, isEmailUpdated}: {isPasswordUpdated: boolean, isUsernameUpdated: boolean, isEmailUpdated: boolean} = {isPasswordUpdated: false, isUsernameUpdated: false, isEmailUpdated: false};
     let moreInfo: string = "";
-    const userId: number = Number(req.params.id);
+    const userId: string = req.params.id;
 
     const password: string = req.body.password?.toString();
     if (password && isStrongPassword(password)) {
@@ -93,30 +100,5 @@ usersRoutes.put('/:id', async (req, res) => {
         res.status(500).send(`user not found or content up to date. ${moreInfo}`);
     }
 });
-
-usersRoutes.post('/login', async (req, res) => {
-    const user: IUser = req.body.user;
-
-    try {
-        if (user && user.password && user.email) {
-            const userDoc: HydratedDocument<IUser> = await userQueryService.getUserByUsernameAndPassword(user.email, user.password);
-
-            if (userDoc) {
-                res.status(200).send({user: {
-                    id: userDoc.id,
-                    email: userDoc.email,
-                    username: userDoc.username
-                }});
-            } else {
-                res.status(500).send('error finding user');
-            }
-        } else {
-            res.status(500).send('data is invalid');
-        }
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-});
-
 
 export default usersRoutes;
