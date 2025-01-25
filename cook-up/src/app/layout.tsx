@@ -1,32 +1,47 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+'use client'
+
+import { Assistant } from "next/font/google";
 import "./globals.css";
+import Header, {HeaderProps} from "@/app/components/navbar/header";
+import { usePathname } from 'next/navigation';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const assistant = Assistant({
+  variable: "--font-assistant",
+  subsets: ["hebrew"],
+  weight: '400'
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "CookUp",
-  description: "A recipe sharing platform",
+const headerProps: HeaderProps = {
+    userAvatarProps: {
+        src: 'https://tecdn.b-cdn.net/img/new/avatars/2.jpg'
+    },
+    navbarItems: [
+        {
+            href: "/",
+            text: "דף הבית"
+        },
+        {
+            href: "/create-recipe",
+            text: "צור מתכון"
+        },
+    ]
 };
+const noNavbarRoutes: string[] = ['/login', '/register'];
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    const isNoNavbarPage: boolean = noNavbarRoutes.includes(usePathname());
+
+    return (
+    <html lang="he">
+    <head>
+        <title>CookUp</title>
+    </head>
+      <body className={assistant.className} dir="rtl">
+      {!isNoNavbarPage && <Header {...headerProps}></Header>}
         {children}
       </body>
     </html>
