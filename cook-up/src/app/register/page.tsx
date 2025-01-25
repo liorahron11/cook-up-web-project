@@ -41,7 +41,7 @@ export default function Register() {
         }));
     };
 
-    const { register, handleSubmit, formState: { errors }, getValues } = useForm({ reValidateMode: 'onSubmit'});
+    const { register, handleSubmit, formState: { errors }, getValues } = useForm<IRegisterFormData>({ reValidateMode: 'onSubmit'});
     const onSubmit = (user: IRegisterFormData) => {
         const userRegisterFields: IUser = {
             email: user.email,
@@ -96,7 +96,7 @@ export default function Register() {
                 required: true,
                 minLength: 6,
                 pattern: new RegExp(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/), // At least one letter and one number
-                validate: () => getValues(PASSWORD_FIELD_ID) === getValues(CONFIRM_PASSWORD_FIELD_ID)
+                validate: () => getValues("password") === getValues("confirmPassword")
             },
             onChange: handleChange
         }
@@ -131,7 +131,7 @@ export default function Register() {
                         <RegisterButton/>
 
                         <div className="m-auto mt-6 w-fit md:mt-8">
-                            {((errors[EMAIL_FIELD_ID] || errors[USERNAME_FIELD_ID] || errors[PASSWORD_FIELD_ID] || errors[CONFIRM_PASSWORD_FIELD_ID]) &&
+                            {((errors["email"] || errors["username"] || errors["password"] || errors["confirmPassword"]) &&
                                 <span className="m-auto ml-1 text-red-500">
                                     {parseErrors(errors)}
                                 </span>)}
