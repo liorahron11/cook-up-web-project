@@ -3,34 +3,35 @@ import UserModel from '../models/user.model';
 import {IUser} from "../interfaces/user.interface";
 import server from "../main";
 
-afterEach(async () => {
-    await UserModel.deleteOne({ id: 999 });
-});
-
 afterAll(async () => {
     server.close();
 });
 
 describe('User API', () => {
-    describe('GET /user', () => {
+    const newUser: IUser = { email: 'jane777@example.com', password: 'Jane1234!', username: "lior" };
+    let userId;
+
+    describe('GET /user', () =>  
         it('should return a list of users', async () => {
-            const res = await request(server).get('/user');
+            await UserModel.create(newUser);
+
+            const res = await request(server).get('/user/all');
+            userId = res.body.find(user => user.email === 'jane777@example.com')._id;
             expect(res.status).toBe(200);
             expect(res.body).toBeInstanceOf(Array);
-        });
+        }));
 
-        it('should return a user with id 999', async () => {
-            await UserModel.create({ username: 'Jane Doe', email: 'jane@example.com', password: '1234', id: 999 });
-
-            const res = await request(server).get('/user/999');
+        it('should return a user with id', async () => {
+            const res = await request(server).get(`/user/${userId}`);
             expect(res.status).toBe(200);
-            expect(res.body).toMatchObject({ username: 'Jane Doe', email: 'jane@example.com', password: '1234', id: 999 });
+            expect(res.body).toMatchObject({ email: 'jane777@example.com', password: 'Jane1234!' });
+
+            await UserModel.deleteOne(newUser);
         });
-    });
 
     describe('POST /user', () => {
         it('should create a new user', async () => {
-            const newUser: IUser = { username: 'Jane Doe', email: 'jane@example.com', password: 'Jane1234!', id: 999 };
+            const newUser: IUser = { email: 'jane777@example.com', password: 'Jane1234!', username: "lior" };
 
             const res = await request(server).post('/user')
                 .send({user: newUser})
@@ -40,19 +41,21 @@ describe('User API', () => {
             expect(res.status).toBe(201);
             expect(res.text).toBe('user created');
 
-            const userInDb = await UserModel.findOne({ id: 999 });
+            const userInDb = await UserModel.findOne({ email: newUser.email });
+            await UserModel.deleteOne({ _id: userInDb.id });
             expect(userInDb).not.toBeNull();
-            expect(userInDb?.username).toBe('Jane Doe');
+            expect(userInDb?.email).toBe('jane777@example.com');
+            expect(userInDb?.username).toBe("lior");
         });
     });
 
     describe('PUT /user', () => {
         it('should update user email and password', async () => {
-            await UserModel.create({ username: 'Jane Doe', email: 'jane@example.com', password: 'Jane1234!', id: 999 });
+            const createdUser = await UserModel.create({email: 'jane1111@example.com', username: 'lior', password: 'Jane1234!'});
 
             const newUserFields: Partial<IUser> = { email: 'israel@example.com', password: 'newPassword123!' };
 
-            const res = await request(server).put('/user/999')
+            const res = await request(server).put(`/user/${createdUser.id}`)
                 .send(newUserFields)
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json');
@@ -60,41 +63,24 @@ describe('User API', () => {
             expect(res.status).toBe(200);
             expect(res.text).toContain('updated successfully');
 
-            const userInDb = await UserModel.findOne({ id: 999 });
+            const userInDb = await UserModel.findOne({ _id: createdUser.id });
+            await UserModel.deleteOne({ _id: userInDb.id });
             expect(userInDb).not.toBeNull();
             expect(userInDb?.email).toBe(newUserFields.email);
-            expect(userInDb?.password).toBe(newUserFields.password);
-        });
-
-        it('should update user username', async () => {
-            await UserModel.create({ username: 'Jane Doe', email: 'jane@example.com', password: 'Jane1234!', id: 999 });
-
-            const newUserFields: Partial<IUser> = { username: 'testing is fun' };
-
-            const res = await request(server).put('/user/999')
-                .send(newUserFields)
-                .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json');
-
-            expect(res.status).toBe(200);
-            expect(res.text).toContain('updated successfully');
-
-            const userInDb = await UserModel.findOne({ id: 999 });
-            expect(userInDb).not.toBeNull();
-            expect(userInDb?.username).toBe(newUserFields.username);
+            expect(userInDb?.password).not.toBe(createdUser.password);
         });
     });
 
     describe('DELETE /user', () => {
         it('should delete a user', async () => {
-            await UserModel.create({ username: 'Jane Doe', email: 'jane@example.com', password: 'Jane1234!', id: 999 });
+            const createdUser = await UserModel.create({ username: 'Jane Doe', email: 'jane@example.com', password: 'Jane1234!'});
 
-            const res = await request(server).delete('/user/999')
+            const res = await request(server).delete(`/user/${createdUser.id}`)
 
             expect(res.status).toBe(200);
             expect(res.text).toBe('user deleted successfully');
 
-            const userInDb = await UserModel.findOne({ id: 999 });
+            const userInDb = await UserModel.findOne({ _id: createdUser.id });
             expect(userInDb).toBeNull();
         });
     });

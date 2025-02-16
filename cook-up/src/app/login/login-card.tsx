@@ -9,6 +9,10 @@ import GoogleLoginButton from "@/app/login/google-login-button";
 import Image from "next/image";
 import React, {useState} from "react";
 import {FieldErrors, FieldValues, useForm} from "react-hook-form";
+import {userLogin} from "@/app/services/rest.service";
+import {saveUserToLocalStorage} from "@/app/services/local-storage.service";
+import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {useRouter} from "next/navigation";
 
 interface ILoginFormData {
     email: string;
@@ -16,6 +20,7 @@ interface ILoginFormData {
 }
 
 export default function LoginCard() {
+    const router: AppRouterInstance = useRouter();
     const [formData, setFormData] = useState<ILoginFormData>({
         email: '',
         password: '',
@@ -33,8 +38,17 @@ export default function LoginCard() {
     };
 
     const { register, handleSubmit, formState: { errors } } = useForm({ reValidateMode: 'onSubmit'});
-    const onSubmit = (data: any) => {
-        console.log(data);
+    const onSubmit = (user: any) => {
+        const userLoginFields = {
+            email: user.email,
+            password: user.password,
+        }
+
+        userLogin(userLoginFields)
+            .then((userInfo) => {
+                saveUserToLocalStorage({email: userInfo.email, username: userInfo.username});
+                router.push('/');
+            });
     };
 
     const inputs: IInputProps[] = [
