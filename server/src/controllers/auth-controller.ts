@@ -45,10 +45,10 @@ const register = async (req: Request, res: Response) => {
 
     try {
         if (isUserValid(user)) {
-            const isUserAdded: boolean = await userQueryService.addUser(user);
+            const userAdded: HydratedDocument<IUser> = await userQueryService.addUser(user);
 
-            if (isUserAdded) {
-                res.status(200).send('register success');
+            if (userAdded) {
+                res.status(200).send(userAdded);
             } else {
                 res.status(500).send('error while try to register');
             }

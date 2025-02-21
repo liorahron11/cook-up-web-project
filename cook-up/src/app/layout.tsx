@@ -4,7 +4,10 @@ import { Assistant } from "next/font/google";
 import "./globals.css";
 import Header, {HeaderProps} from "@/app/components/navbar/header";
 import { usePathname } from 'next/navigation';
+import moment from "moment";
+import 'moment/locale/he';
 
+moment.locale('he');
 const assistant = Assistant({
   variable: "--font-assistant",
   subsets: ["hebrew"],
