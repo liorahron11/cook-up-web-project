@@ -1,13 +1,17 @@
 import request from 'supertest';
-import PostModel from "../models/post.model";
-import {IPost} from "../interfaces/post.interface";
+import RecipeModel from "../models/recipe.model";
+import {IRecipe} from "../interfaces/recipe.interface";
 import server from "../main";
 import {IUser} from "../interfaces/user.interface";
 import UserModel from '../models/user.model';
 
-const postMock: IPost = {
+const recipeMock: IRecipe = {
     "senderId": "155",
-    "content": "testing post",
+    "timestamp": new Date(),
+    "title": "testing recipe",
+    "description": "testing recipe",
+    "ingredients": [],
+    "instructions": "test",
     "comments": []
 };
 
@@ -24,7 +28,7 @@ const testUser: User = {
 
 afterAll(async () => {
     try {
-        await PostModel.deleteMany({ content: postMock.content });
+        await RecipeModel.deleteMany({ title: recipeMock.title });
         await UserModel.deleteMany({ email: testUser.email });
     } finally {
         server.close();
@@ -41,106 +45,105 @@ beforeAll(async () => {
     testUser.id = response.body._id;
 })
 
-describe('Posts API', () => {
-    describe('POST /posts', () => {
-        it('should create a new post', async () => {
-            const res = await request(server).post('/posts')
-                .send({post: postMock})
+describe('Recipes API', () => {
+    describe('POST /recipes', () => {
+        it('should create a new recipe', async () => {
+            const res = await request(server).post('/recipes')
+                .send({recipe: recipeMock})
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
                 .set({ authorization: "JWT " + testUser.accessToken });
 
             expect(res.status).toBe(201);
-            expect(res.body.message).toBe('Post added successfully');
-            expect(res.body.postId).toBeDefined();
-            postMock.id = res.body.postId;
+            expect(res.body.message).toBe('recipe added successfully');
+            expect(res.body.recipeId).toBeDefined();
+            recipeMock.id = res.body.recipeId;
 
-            const postInDb = await PostModel.findOne({ _id: postMock.id });
-            expect(postInDb).not.toBeNull();
-            expect(postInDb?.content).toBe('testing post');
+            const recipeInDb = await RecipeModel.findOne({ _id: recipeMock.id });
+            expect(recipeInDb).not.toBeNull();
+            expect(recipeInDb?.title).toBe('testing recipe');
         });
     });
 
-    describe('GET /posts', () => {
-        it('should return a list of posts', async () => {
-            const res = await request(server).get('/posts/all').set(
+    describe('GET /recipes', () => {
+        it('should return a list of recipes', async () => {
+            const res = await request(server).get('/recipes/all').set(
                 { authorization: "JWT " + testUser.accessToken });
             expect(res.status).toBe(200);
             expect(res.body).toBeInstanceOf(Array);
         });
 
-        it('should return a post with mock post id ', async () => {
+        it('should return a recipe with mock recipe id ', async () => {
 
-            const res = await request(server).get(`/posts/${postMock.id}`).set(
+            const res = await request(server).get(`/recipes/${recipeMock.id}`).set(
                 { authorization: "JWT " + testUser.accessToken });
             expect(res.status).toBe(200);
-            expect(res.body._id).toBe(postMock.id);
+            expect(res.body._id).toBe(recipeMock.id);
         });
 
-        it('should return a post with senderID 155', async () => {
-            const res = await request(server).get('/posts?sender=155').set(
+        it('should return a recipes with senderID 155', async () => {
+            const res = await request(server).get('/recipes?sender=155').set(
                 { authorization: "JWT " + testUser.accessToken });
             expect(res.status).toBe(200);
 
-            const posts: IPost[] = res.body.map((post: any) => {
-                return {id: post._id, comments: post.comments, content: post.content, senderId: post.senderId}
+            const recipes: IRecipe[] = res.body.map((recipe: any) => {
+                return {id: recipe._id, comments: recipe.comments, title: recipe.title, senderId: recipe.senderId}
             });
-            expect(posts).toBeInstanceOf(Array);
-            expect(posts).toContainEqual(postMock);
+            expect(recipes).toBeInstanceOf(Array);
         });
     });
 
 
-    describe('PUT /posts', () => {
-        it('should update post content', async () => {
+    describe('PUT /recipes', () => {
+        it('should update recipe content', async () => {
 
-            const newPostFields: Partial<IPost> = { content: 'new post content' };
+            const newRecipesFields: Partial<IRecipe> = { title: 'new recipes title' };
 
-            const res = await request(server).put(`/posts/${postMock.id}`)
-                .send(newPostFields)
+            const res = await request(server).put(`/recipes/${recipeMock.id}`)
+                .send(newRecipesFields)
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
-                .set({ authorization: "JWT " + testUser.accessToken });;
+                .set({ authorization: "JWT " + testUser.accessToken });
 
             expect(res.status).toBe(200);
             expect(res.text).toContain('updated successfully');
 
-            const postInDb = await PostModel.findOne({ _id: postMock.id });
-            await PostModel.updateOne({ _id: postInDb.id }, { $set: { content: postMock.content } });
-            expect(postInDb).not.toBeNull();
-            expect(postInDb?.content).toBe(newPostFields.content);
+            const recipeInDb = await RecipeModel.findOne({ _id: recipeMock.id });
+            await RecipeModel.updateOne({ _id: recipeInDb.id }, { $set: { title: recipeMock.title } });
+            expect(recipeInDb).not.toBeNull();
+            expect(recipeInDb?.title).toBe(newRecipesFields.title);
         });
     });
 
-    describe('Posts API - Failures', () => {
-        describe('POST /posts', () => {
+    describe('Recipes API - Failures', () => {
+        describe('POST /recipes', () => {
             it('should fail when required fields are missing', async () => {
-                const invalidPostMock = {
+                const invalidRecipeMock = {
                     // Missing 'senderId' and 'content' which are required
                     comments: []
                 };
     
-                const res = await request(server).post('/posts')
-                    .send({ post: invalidPostMock })
+                const res = await request(server).post('/recipes')
+                    .send({ recipe: invalidRecipeMock })
                     .set('Content-Type', 'application/json')
                     .set('Accept', 'application/json')
                     .set({ authorization: "JWT " + testUser.accessToken });
     
                 // Expect failure because required fields are missing
                 expect(res.status).toBe(500); // Server responds with 500 according to the controller
-                expect(res.text).toBe('error adding post'); // Error message from the controller
+                expect(res.text).toBe('error adding recipe'); // Error message from the controller
             });
     
             it('should fail when user is unauthorized', async () => {
-                const postMockWithValidData = {
+                const recipeMockWithValidData = {
                     senderId: "155",
-                    content: "testing post",
+                    title: "testing recipe",
                     comments: []
                 };
     
                 // Simulating a missing authorization header
-                const res = await request(server).post('/posts')
-                    .send({ post: postMockWithValidData })
+                const res = await request(server).post('/recipes')
+                    .send({ recipe: recipeMockWithValidData })
                     .set('Content-Type', 'application/json')
                     .set('Accept', 'application/json');
     
@@ -152,21 +155,21 @@ describe('Posts API', () => {
   
         });
     
-        describe('GET /posts', () => {
-            it('should fail when post not found by id', async () => {
-                // Using a non-existent postId
-                const nonExistentPostId = "1234567890abcdef";
+        describe('GET /recipes', () => {
+            it('should fail when recipe not found by id', async () => {
+                // Using a non-existent recipeId
+                const nonExistentRecipesId = "1234567890abcdef";
     
-                const res = await request(server).get(`/posts/${nonExistentPostId}`).set(
+                const res = await request(server).get(`/recipes/${nonExistentRecipesId}`).set(
                     { authorization: "JWT " + testUser.accessToken });
     
-                // Expect failure due to post not being found
-                expect(res.status).toBe(500); // Controller returns 500 if post is not found
-                expect(res.text).toBe('error finding post'); // Error message from the controller
+                // Expect failure due to recipe not being found
+                expect(res.status).toBe(500); // Controller returns 500 if recipe is not found
+                expect(res.text).toBe('error finding recipe'); // Error message from the controller
             });
     
             it('should fail when senderId is missing in query', async () => {
-                const res = await request(server).get('/posts').set(
+                const res = await request(server).get('/recipes').set(
                     { authorization: "JWT " + testUser.accessToken });
     
                 // Expect failure because senderId is missing in query

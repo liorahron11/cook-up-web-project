@@ -30,32 +30,32 @@ export const userLogin = async (data: Partial<IUser>) => {
     }
 }
 
-export const getPosts = async () => {
+export const getRecipes = async () => {
     try {
-        const response = await apiClient.get('/posts/all');
+        const response = await apiClient.get('/recipes/all');
         return response.data;
     } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching recipes:', error);
         throw error;
     }
 };
 
-export const getUserPosts = async () => {
+export const getUserRecipes = async () => {
     try {
-        const response = await apiClient.get(`/posts?sender=${user.id}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        const response = await apiClient.get(`/recipes?sender=${user.id}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
         return response.data;
     } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching recipes:', error);
         throw error;
     }
 };
 
-export const createPost = async (data: any) => {
+export const createRecipes = async (data: any) => {
     try {
-        const response = await apiClient.post('/posts', data);
+        const response = await apiClient.post('/recipes', data);
         return response.data;
     } catch (error) {
-        console.error('Error creating post:', error);
+        console.error('Error creating recipes:', error);
         throw error;
     }
 };

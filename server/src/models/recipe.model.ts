@@ -1,8 +1,8 @@
 import {Schema, model, Model} from 'mongoose';
 import {IComment} from "../interfaces/comment.interface";
-import {IPost} from "../interfaces/post.interface";
+import {IRecipe} from "../interfaces/recipe.interface";
 import {IIngredient} from "../interfaces/ingredients.interface";
-export type PostModel = Model<IPost>;
+export type RecipeModel = Model<IRecipe>;
 export type CommentModel = Model<IComment>;
 
 const commentSchema: Schema<IComment, CommentModel> = new Schema<IComment, CommentModel>({
@@ -16,7 +16,7 @@ const ingredientSchema = new Schema<IIngredient>({
     unit: { type: String, required: true },
 });
 
-const postSchema: Schema<IPost, PostModel> = new Schema<IPost, PostModel>({
+const recipeSchema: Schema<IRecipe, RecipeModel> = new Schema<IRecipe, RecipeModel>({
     timestamp: { type: Date, default: Date.now },
     senderId: { type: String, required: true },
     title: { type: String, required: true },
@@ -26,4 +26,4 @@ const postSchema: Schema<IPost, PostModel> = new Schema<IPost, PostModel>({
     comments: { type: [commentSchema], default: [] }
 });
 
-export default model<IPost, PostModel>('Post', postSchema);
+export default model<IRecipe, RecipeModel>('Recipe', recipeSchema);

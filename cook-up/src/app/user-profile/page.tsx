@@ -3,21 +3,22 @@
 import React from "react";
 import { getUserFromLocalStorage } from "@/app/services/local-storage.service";
 import { LocalStorageUser } from "@/app/services/local-storage.service";
-import {getUserPosts} from "@/app/services/rest.service";
+import {getUserRecipes} from "@/app/services/rest.service";
 import {useEffect, useState} from "react";
-import {IPost} from "@server/interfaces/post.interface";
+import {IRecipe} from "@server/interfaces/recipe.interface";
 import PostsGrid, {PostsGridProps} from "@/app/components/posts-grid";
+import posts from "@server/routes/recipes";
 
 export default function UserProfile() {
-    const [posts, setPosts] = useState<IPost[] | null>(null);
+    const [recipes, setRecipes] = useState<IRecipe[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const userDetails: LocalStorageUser = getUserFromLocalStorage();
 
     useEffect(() => {
         const fetchData = async () => {
-            const userPosts: IPost[] = await getUserPosts();
+            const userPosts: IRecipe[] = await getUserRecipes();
 
-            setPosts(userPosts);
+            setRecipes(userPosts);
             setLoading(false);
         };
 
@@ -25,7 +26,7 @@ export default function UserProfile() {
     }, []);
 
     const postGridProps: PostsGridProps = {
-        posts: posts
+        posts: recipes
     }
 
     if (loading) {

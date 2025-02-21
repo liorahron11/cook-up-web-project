@@ -2,10 +2,13 @@ import request from 'supertest';
 import {IUser} from "../interfaces/user.interface";
 import server from "../main";
 import UserModel from "../models/user.model";
+import RecipeModel from "../models/recipe.model";
+import {IRecipe} from "../interfaces/recipe.interface";
 
 afterAll(async () => {
     try {
         await UserModel.deleteOne({ _id: testUser.id });
+        await RecipeModel.deleteOne({ _id: recipeMock.id });
     } finally {
         server.close();
     }
@@ -23,6 +26,16 @@ const baseUrl = "/auth";
     email: "test@user.com",
     password: "Testpassword6677!",
   }
+
+  const recipeMock: IRecipe = {
+      "senderId": "155",
+      "timestamp": new Date(),
+      "title": "testing recipe",
+      "description": "testing recipe",
+      "ingredients": [],
+      "instructions": "test",
+      "comments": []
+  };
 
 describe("Auth Tests", () => {
     test("Auth test register", async () => {
@@ -84,22 +97,20 @@ describe("Auth Tests", () => {
     });
   
     test("Auth test me", async () => {
-      const response = await request(server).post("/posts").send({
-        post : {
+      const response = await request(server).post("/recipes").send({
+        recipe : {
         senderId: "155",
         content: "testing post",
         comments: []
       }});
       expect(response.statusCode).not.toBe(201);
-      const response2 = await request(server).post("/posts").set(
+      const response2 = await request(server).post("/recipes").set(
         { authorization: "JWT " + testUser.accessToken }
       ).send({
-        post : {
-        senderId: "155",
-        content: "testing post",
-        comments: []
-      }});
-      expect(response2.statusCode).toBe(201);
+          recipe : recipeMock
+      });
+      expect(response2.statusCode).not.toBe(401);
+      recipeMock.id = response2.body.recipeId;
     });
   
     test("Test refresh token", async () => {

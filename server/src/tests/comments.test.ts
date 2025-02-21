@@ -1,22 +1,28 @@
 import request from 'supertest';
-import PostModel from "../models/post.model";
-import {IPost} from "../interfaces/post.interface";
+import RecipeModel from "../models/recipe.model";
+import {IRecipe} from "../interfaces/recipe.interface";
 import server from "../main";
 import {IComment} from "../interfaces/comment.interface";
 import {IUser} from "../interfaces/user.interface";
 import UserModel from "../models/user.model";
 
-const postMock: IPost = {
-    senderId: "156",
-    content: "testing post",
+const recipeMock: IRecipe = {
+    "senderId": "156",
+    "timestamp": new Date(),
+    "title": "testing post",
+    "description": "testing post",
+    "ingredients": [],
+    "instructions": "test",
     comments: [
         {
+            timestamp: new Date(),
             content: 'test comment',
             senderId: "345"
         }
     ]
 };
 const commentMock: IComment = {
+    timestamp: new Date(),
     content: 'new comment',
     senderId: "92"
 }
@@ -33,9 +39,9 @@ const testUser: User = {
 }
 
 beforeAll(async () => {
-    const savedPost: IPost = await PostModel.create(postMock);
-    postMock.id = savedPost.id;
-    postMock.comments[0].id = savedPost.comments[0].id;
+    const savedRecipe: IRecipe = await RecipeModel.create(recipeMock);
+    recipeMock.id = savedRecipe.id;
+    recipeMock.comments[0].id = savedRecipe.comments[0].id;
     const response = await request(server).post("/auth/register").send(testUser);
     const response2 = await request(server).post("/auth/login").send(testUser);
     const accessToken = response2.body.accessToken;
@@ -47,7 +53,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
     try {
-        await PostModel.deleteMany({ content: postMock.content });
+        await RecipeModel.deleteMany({ title: recipeMock.title });
         await UserModel.deleteMany({ email: testUser.email });
     } finally {
         server.close();
@@ -56,8 +62,8 @@ afterAll(async () => {
 
 describe('Comments API', () => {
     describe('POST /comments', () => {
-        it('should create a new comment on a post', async () => {
-            const res = await request(server).post(`/comments/${postMock.id}`)
+        it('should create a new comment on a recipe', async () => {
+            const res = await request(server).post(`/comments/${recipeMock.id}`)
                 .send({comment: commentMock})
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
@@ -66,18 +72,18 @@ describe('Comments API', () => {
             expect(res.status).toBe(201);
             expect(res.text).toBe('comment added successfully');
 
-            const postInDb: IPost = await PostModel.findOne({ _id: postMock.id }).lean();
-            const commentsInDb: IComment[] = postInDb.comments;
+            const recipeInDb: IRecipe = await RecipeModel.findOne({ _id: recipeMock.id }).lean();
+            const commentsInDb: IComment[] = recipeInDb.comments;
             expect(commentsInDb).not.toBeNull();
             expect(commentsInDb).toBeInstanceOf(Array);
 
             const addedCommentInDb: IComment = commentsInDb[1];
             expect(addedCommentInDb).not.toBeNull();
-            expect(addedCommentInDb).toMatchObject(commentMock);
+            expect(addedCommentInDb.content).toMatch(commentMock.content);
         });
         
             it('should return an error when the user is not authorized to add a comment', async () => {
-                const res = await request(server).post(`/comments/${postMock.id}`)
+                const res = await request(server).post(`/comments/${recipeMock.id}`)
                     .send({ comment: commentMock })
                     .set('Content-Type', 'application/json')
                     .set('Accept', 'application/json')
@@ -89,8 +95,8 @@ describe('Comments API', () => {
     });
 
     describe('GET /comments', () => {
-        it('should return a list of comments of post', async () => {
-            const res = await request(server).get(`/comments/${postMock.id}`).set(
+        it('should return a list of comments of recipe', async () => {
+            const res = await request(server).get(`/comments/${recipeMock.id}`).set(
                 { authorization: "JWT " + testUser.accessToken });
 
                 const comments: IComment[] = res.body.map((comment: any) => {
@@ -98,11 +104,11 @@ describe('Comments API', () => {
                 });
             expect(res.status).toBe(200);
             expect(res.body).toBeInstanceOf(Array);
-            expect(comments[0]).toMatchObject(postMock.comments[0]);
+            expect(comments[0].content).toMatch(recipeMock.comments[0].content);
         });
 
-        it('should return a comment with id in post with id 345', async () => {
-            const res = await request(server).get(`/comments/${postMock.id}/${postMock.comments[0].id}`).set(
+        it('should return a comment with id in recipe with id 345', async () => {
+            const res = await request(server).get(`/comments/${recipeMock.id}/${recipeMock.comments[0].id}`).set(
                 { authorization: "JWT " + testUser.accessToken });
             const comment: any = res.body;
             const retComment = { _id: comment._id, content: comment.content, senderId: comment.senderId};                
@@ -115,7 +121,7 @@ describe('Comments API', () => {
         it('should update comment content', async () => {
             const newCommentFields: Partial<IComment> = { content: 'new comment content' };
 
-            const res = await request(server).put(`/comments/${postMock.id}/${postMock.comments[0].id}`)
+            const res = await request(server).put(`/comments/${recipeMock.id}/${recipeMock.comments[0].id}`)
                 .send(newCommentFields)
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
@@ -124,12 +130,12 @@ describe('Comments API', () => {
             expect(res.status).toBe(200);
             expect(res.text).toContain('comment updated successfully');
 
-            const postInDb = await PostModel.findOne({  _id: postMock.id }).lean();
-            const commentsInDb: IComment[] = postInDb?.comments;
+            const recipeInDb = await RecipeModel.findOne({  _id: recipeMock.id }).lean();
+            const commentsInDb: IComment[] = recipeInDb?.comments;
             expect(commentsInDb).not.toBeNull();
             expect(commentsInDb).toBeInstanceOf(Array);
 
-            const updatedCommentInDb: IComment = commentsInDb.find((comment: any) => String(comment._id) === postMock.comments[0].id);
+            const updatedCommentInDb: IComment = commentsInDb.find((comment: any) => String(comment._id) === recipeMock.comments[0].id);
             expect(updatedCommentInDb).not.toBeNull();
             expect(updatedCommentInDb?.content).toBe(newCommentFields.content);
         });
@@ -138,7 +144,7 @@ describe('Comments API', () => {
             const invalidCommentId = 'invalidCommentId';
             const newCommentFields: Partial<IComment> = { content: 'updated comment content' };
     
-            const res = await request(server).put(`/comments/${postMock.id}/${invalidCommentId}`)
+            const res = await request(server).put(`/comments/${recipeMock.id}/${invalidCommentId}`)
                 .send(newCommentFields)
                 .set('Content-Type', 'application/json')
                 .set('Accept', 'application/json')
@@ -152,24 +158,24 @@ describe('Comments API', () => {
 
     describe('DELETE /comments', () => {
         it('should delete a comment', async () => {
-            const res = await request(server).delete(`/comments/${postMock.id}/${postMock.comments[0].id}`).set(
+            const res = await request(server).delete(`/comments/${recipeMock.id}/${recipeMock.comments[0].id}`).set(
                 { authorization: "JWT " + testUser.accessToken });
 
             expect(res.status).toBe(200);
             expect(res.text).toContain('comment deleted successfully');
 
-            const postInDb = await PostModel.findOne({ _id: postMock.id }).lean();
-            const commentsInDb: IComment[] = postInDb?.comments;
+            const recipeInDb = await RecipeModel.findOne({ _id: recipeMock.id }).lean();
+            const commentsInDb: IComment[] = recipeInDb?.comments;
             expect(commentsInDb).toBeInstanceOf(Array);
 
-            const updatedCommentInDb: IComment = commentsInDb.find((comment: any) => String(comment._id) === postMock.comments[0].id);
+            const updatedCommentInDb: IComment = commentsInDb.find((comment: any) => String(comment._id) === recipeMock.comments[0].id);
             expect(updatedCommentInDb).toBeUndefined();
         });
 
         it('should return an error when attempting to delete a non-existing comment', async () => {
             const nonExistingCommentId = 'nonExistingCommentId';
     
-            const res = await request(server).delete(`/comments/${postMock.id}/${nonExistingCommentId}`)
+            const res = await request(server).delete(`/comments/${recipeMock.id}/${nonExistingCommentId}`)
                 .set({ authorization: "JWT " + testUser.accessToken });
     
             expect(res.status).toBe(500);

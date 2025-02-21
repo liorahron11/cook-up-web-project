@@ -1,7 +1,7 @@
 import {IComment} from "./comment.interface";
 import {IIngredient} from "./ingredients.interface";
 
-export interface IPost {
+export interface IRecipe {
     id?: string;
     timestamp: Date;
     senderId: string;
