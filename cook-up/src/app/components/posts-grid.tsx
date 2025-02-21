@@ -9,7 +9,7 @@ export interface PostsGridProps {
 export default function PostsGrid({postsGridProps}: {postsGridProps: PostsGridProps}) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
-            {postsGridProps.posts?.map((post: IPost) => <Post key={post.id} postProps={{post}}></Post>)}
+            {postsGridProps.posts?.map((post: IPost) => <Post key={post.title} postProps={{post}}></Post>)}
         </div>);
 };
 
