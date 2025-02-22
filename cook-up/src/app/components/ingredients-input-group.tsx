@@ -7,7 +7,8 @@ import {IIngredient} from "@server/interfaces/ingredients.interface";
 import {Button} from "primereact/button";
 
 export default function IngredientsInputGroup({registerAction }: {registerAction: UseFormRegister<any>}) {
-    const [currentIngredients, setCurrentIngredients] = React.useState<IIngredient[]>([]);
+    const [currentIngredients, setCurrentIngredients] = React.useState<IIngredient[]>([{quantity: 0, unit: null, name: ''}]);
+    const [isHovered, setIsHovered] = React.useState<boolean[]>([false]);
 
     const quantityInputProps: IInputProps = {
         id: 'quantity',
@@ -44,11 +45,20 @@ export default function IngredientsInputGroup({registerAction }: {registerAction
             );
         }
 
-        return (<div className="flex justify-start items-center flex-row" key={index}>
+        const updateIsHovered = (index: number, isHovered: boolean) => {
+            setIsHovered((prevIsHovered: boolean[]) =>
+                prevIsHovered.map((prevIsHovered: boolean, prevIndex: number) => index === prevIndex ? isHovered : prevIsHovered)
+            );
+        }
+
+        return (<div className="flex justify-start items-center flex-row pl-10" key={index} onMouseEnter={() => updateIsHovered(index, true)} onMouseLeave={() => updateIsHovered(index, false)}>
             <Input inputProps={quantityInputProps} registerAction={registerAction} className="w-14 h-[2.5rem]"></Input>
             <Dropdown value={ingredient.unit} onChange={(e: DropdownChangeEvent) => updateUnit(e)} options={ingredientUnitDropdownProps.options} optionLabel="label"
                       placeholder={ingredientUnitDropdownProps.placeholder} className="w-30 border rounded-md mr-3 ml-3 mt-1 p-inputtext-sm" checkmark={true} highlightOnSelect={false} />
             <Input inputProps={ingredientNameInputProps} registerAction={registerAction} className="w-24 h-[2.5rem]"></Input>
+            {isHovered[index] && <Button icon="pi pi-times" rounded outlined severity="danger" size="small" className="p-0 h-4 w-4 mr-2 text-[10px] absolute right-[63%]" type="button" onClick={() => removeIngredient(index)}/>
+            }
+
         </div>)
     };
 
@@ -58,10 +68,24 @@ export default function IngredientsInputGroup({registerAction }: {registerAction
             unit: null,
             name: ''
         }]);
+        setIsHovered([...isHovered, false]);
+    }
+
+    const removeIngredient = (index: number) => {
+        setCurrentIngredients((prevIngredients: IIngredient[]) =>
+            prevIngredients.filter((prevIngredient: IIngredient, prevIndex: number) => index !== prevIndex)
+        );
     }
 
     return (
         <div className="flex justify-start flex-col">
+            <style>
+                {`
+                    .p-button-icon {
+                        font-size: 10px;
+                      }
+                `}
+            </style>
             <div className="flex justify-start items-center flex-row gap-3 pb-2">
                 <label className= "block text-sm font-medium text-gray-700 dark:text-white">מצרכים</label>
                 <Button label="הוסף" rounded outlined onClick={() => addIngredient()} type="button" className="h-[0.5rem] text-sm" />
