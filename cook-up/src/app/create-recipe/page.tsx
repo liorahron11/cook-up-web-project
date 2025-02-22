@@ -2,18 +2,19 @@
 
 import Card from "@/app/components/card";
 import Input, {IInputProps} from "@/app/login/input";
-import RegisterButton from "@/app/register/register-button";
 import React, {useState} from "react";
 import {FieldErrors, FieldValues, useForm} from "react-hook-form";
-import {router} from "next/client";
+import {useRouter} from "next/navigation";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import {createRecipe} from "@/app/services/rest.service";
 import {getUserFromLocalStorage} from "@/app/services/local-storage.service";
 import IngredientsInputGroup from "@/app/components/ingredients-input-group";
 import CreateRecipeButton from "@/app/create-recipe/create-recipe-button";
 import {IIngredient} from "@server/interfaces/ingredients.interface";
+import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export default function CreateRecipe() {
+    const router: AppRouterInstance = useRouter();
     const [formData, setFormData] = useState<{title: string, description: string, ingredients: IIngredient[], instructions: string}>({
         title: '',
         description: '',
@@ -47,7 +48,7 @@ export default function CreateRecipe() {
             senderId: getUserFromLocalStorage().id,
             title: recipe.title,
             description: recipe.description,
-            ingredients: recipe.ingredients,
+            ingredients: formData.ingredients,
             instructions: recipe.instructions,
             comments: []
         };
