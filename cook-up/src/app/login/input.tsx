@@ -10,6 +10,8 @@ export interface IInputProps {
     label?: string;
     placeholder?: string;
     defaultValue?: string | number;
+    value?: string | null | undefined;
+    min?: number
     type: HTMLInputTypeAttribute;
     validationFields?: {
         required?: boolean;
@@ -31,7 +33,7 @@ export default function Input({ inputProps, registerAction, className = 'w-80' }
     if (inputProps.type === 'textarea') {
         input = <InputTextarea autoResize id={inputFields.id} {...registerAction(inputProps.id, {...validationFields})} rows={5} cols={30} className={"rounded-md border border-gray-300 ".concat(className)}/>;
     } else {
-        input = (<InputText  {...registerAction(inputProps.id, {...validationFields})} {...inputFields} className={"rounded-md border p-inputtext-sm border-gray-300 ".concat(className)}/>)
+        input = (<InputText {...registerAction(inputProps.id, {...validationFields})} {...inputFields} className={"rounded-md border p-inputtext-sm border-gray-300 ".concat(className)}/>)
     }
 
     if (inputProps.label) {

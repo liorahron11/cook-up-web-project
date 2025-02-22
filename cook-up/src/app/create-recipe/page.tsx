@@ -10,14 +10,22 @@ import {IRecipe} from "@server/interfaces/recipe.interface";
 import {createRecipe} from "@/app/services/rest.service";
 import {getUserFromLocalStorage} from "@/app/services/local-storage.service";
 import IngredientsInputGroup from "@/app/components/ingredients-input-group";
+import CreateRecipeButton from "@/app/create-recipe/create-recipe-button";
+import {IIngredient} from "@server/interfaces/ingredients.interface";
 
 export default function CreateRecipe() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{title: string, description: string, ingredients: IIngredient[], instructions: string}>({
         title: '',
         description: '',
-        ingredients: '',
+        ingredients: [],
         instructions: '',
     });
+
+    const handleIngredientsGroupStateChange = (newState: IIngredient[]) => {
+        setFormData((prevData) => {
+            return {...prevData, ingredients: newState}
+        });
+    };
 
     const TITLE_FIELD_ID: string = Object.keys(formData)[0];
     const DESCRIPTION_FIELD_ID: string = Object.keys(formData)[1];
@@ -118,13 +126,13 @@ export default function CreateRecipe() {
             <form className="space-y-6 mt-6" onSubmit={handleSubmit(onSubmit)}>
                 {inputs.map((input: IInputProps) => {
                     if (input.type === 'ingredients') {
-                        return <IngredientsInputGroup key={input.id} registerAction={register}></IngredientsInputGroup>;
+                        return <IngredientsInputGroup key={input.id} registerAction={register} onStateChange={handleIngredientsGroupStateChange}></IngredientsInputGroup>;
                     } else {
-                        return <Input key={input.id} inputProps={input}
+                        return <Input key={input.id} inputProps={input} className="w-[20vw]"
                                       registerAction={register}></Input>;
                     }
                 })}
-                <RegisterButton/>
+                <CreateRecipeButton/>
 
                 <div className="m-auto mt-6 w-fit md:mt-8">
                     {((errors["title"] || errors["description"] || errors["ingredients"] || errors["instructions"]) &&
