@@ -50,9 +50,9 @@ export const getUserRecipes = async () => {
     }
 };
 
-export const createRecipes = async (data: any) => {
+export const createRecipe = async (data: any) => {
     try {
-        const response = await apiClient.post('/recipes', data);
+        const response = await apiClient.post('/recipes', data, {headers: {Authorization: `Bearer ${user.accessToken}`}});
         return response.data;
     } catch (error) {
         console.error('Error creating recipes:', error);

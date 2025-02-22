@@ -7,7 +7,6 @@ import {getUserRecipes} from "@/app/services/rest.service";
 import {useEffect, useState} from "react";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import PostsGrid, {PostsGridProps} from "@/app/components/posts-grid";
-import posts from "@server/routes/recipes";
 
 export default function UserProfile() {
     const [recipes, setRecipes] = useState<IRecipe[] | null>(null);
@@ -49,14 +48,10 @@ export default function UserProfile() {
                                 </button>
                             </div>
                             <p className="text-sm mt-2">{userDetails.email}</p>
-                            <p className="text-sm mt-2">{posts.length} פוסטים</p>
+                            <p className="text-sm mt-2">{postGridProps.posts.length} פוסטים</p>
                         </div>
                     </div>
                     <hr className="h-px my-8 w-[70vw] bg-gray-200 border-0 dark:bg-gray-700"/>
-                    {/*<div className="grid grid-cols-3 gap-4">*/}
-                    {/*    {posts}*/}
-                    {/*</div>*/}
-
                     <PostsGrid postsGridProps={postGridProps}></PostsGrid>
                 </div>
             );

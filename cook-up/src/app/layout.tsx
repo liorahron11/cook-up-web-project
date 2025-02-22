@@ -1,11 +1,15 @@
 'use client'
 
+import React from "react";
 import { Assistant } from "next/font/google";
 import "./globals.css";
 import Header, {HeaderProps} from "@/app/components/navbar/header";
 import { usePathname } from 'next/navigation';
 import moment from "moment";
 import 'moment/locale/he';
+import { PrimeReactProvider } from 'primereact/api';
+import 'primereact/resources/themes/lara-light-indigo/theme.css';
+import 'primeicons/primeicons.css';
 
 moment.locale('he');
 const assistant = Assistant({
@@ -42,10 +46,22 @@ export default function RootLayout({
     <html lang="he">
     <head>
         <title>CookUp</title>
+        <script
+            dangerouslySetInnerHTML={{
+                __html: `
+              const style = document.createElement('style')
+              style.innerHTML = '@layer tailwind-base, primereact, tailwind-utilities;'
+              style.setAttribute('type', 'text/css')
+              document.querySelector('head').prepend(style)
+            `,
+            }}
+        />
     </head>
       <body className={assistant.className} dir="rtl">
-      {!isNoNavbarPage && <Header {...headerProps}></Header>}
-        {children}
+      <PrimeReactProvider>
+          {!isNoNavbarPage && <Header {...headerProps}></Header>}
+          {children}
+      </PrimeReactProvider>
       </body>
     </html>
   );

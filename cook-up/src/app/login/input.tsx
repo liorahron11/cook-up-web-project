@@ -1,10 +1,15 @@
 "use client";
 
+import React from "react";
 import {ChangeEventHandler, HTMLInputTypeAttribute} from "react";
 import {UseFormRegister} from "react-hook-form";
+import {InputText} from "primereact/inputtext";
+import {InputTextarea} from "primereact/inputtextarea";
 export interface IInputProps {
     id: string;
-    label: string;
+    label?: string;
+    placeholder?: string;
+    defaultValue?: string | number;
     type: HTMLInputTypeAttribute;
     validationFields?: {
         required?: boolean;
@@ -18,13 +23,25 @@ export interface IInputProps {
     onChange: ChangeEventHandler<HTMLInputElement>;
 }
 
-export default function Input({ inputProps, registerAction }: { inputProps: IInputProps, registerAction: UseFormRegister<any>; }) {
+export default function Input({ inputProps, registerAction, className = 'w-80' }: { inputProps: IInputProps, registerAction: UseFormRegister<any>, className?: string}) {
     const { validationFields, ...inputFields } = inputProps;
+    let input;
+    let label;
+
+    if (inputProps.type === 'textarea') {
+        input = <InputTextarea autoResize id={inputFields.id} {...registerAction(inputProps.id, {...validationFields})} rows={5} cols={30} className={"rounded-md border border-gray-300 ".concat(className)}/>;
+    } else {
+        input = (<InputText  {...registerAction(inputProps.id, {...validationFields})} {...inputFields} className={"rounded-md border p-inputtext-sm border-gray-300 ".concat(className)}/>)
+    }
+
+    if (inputProps.label) {
+        label = <label htmlFor={inputProps.id} className= "block text-sm font-medium text-gray-700 dark:text-white">{inputProps.label}</label>;
+    }
 
     return (<div>
-                <label htmlFor={inputProps.id} className="block text-sm font-medium text-gray-700 dark:text-white">{inputProps.label}</label>
+                {label}
                 <div className="mt-1">
-                    <input {...inputFields} {...registerAction(inputProps.id, {...validationFields})} className="block w-80 appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder-gray-300 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 sm:text-sm"/>
+                    {input}
                 </div>
             </div>);
 }

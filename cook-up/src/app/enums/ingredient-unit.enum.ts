@@ -1,4 +1,4 @@
-enum EIngredientUnit {
+export enum EIngredientUnit {
     GRAM = "גרם",
     KILOGRAM = "קילוגרם",
     MILLILITER = "מיליליטר",
