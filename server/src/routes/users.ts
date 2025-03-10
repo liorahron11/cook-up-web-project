@@ -31,10 +31,10 @@ usersRoutes.post('/', async (req, res) => {
 
     try {
         if (isUserValid(user)) {
-            const isUserAdded: boolean = await userQueryService.addUser(user);
+            const userAdded: HydratedDocument<IUser> = await userQueryService.addUser(user);
 
-            if (isUserAdded) {
-                res.status(201).send('user created');
+            if (userAdded) {
+                res.status(201).send(userAdded);
             } else {
                 res.status(500).send('error creating user');
             }

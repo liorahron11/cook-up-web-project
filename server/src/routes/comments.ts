@@ -16,22 +16,22 @@ const commentsRoutes: Router = express.Router();
  * paths:
  *   /comments/{id}:
  *     get:
- *       summary: Get all comments for a specific post by post ID
- *       description: Fetch all comments for a post identified by postId.
+ *       summary: Get all comments for a specific recipe by recipe ID
+ *       description: Fetch all comments for a recipe identified by recipeId.
  *       tags:
  *         - Comments
  *       parameters:
  *         - in: path
  *           name: id
  *           required: true
- *           description: The ID of the post to retrieve comments for
+ *           description: The ID of the recipe to retrieve comments for
  *           schema:
  *             type: string
  *       security:
  *         - bearerAuth: []
  *       responses:
  *         200:
- *           description: List of comments for the post
+ *           description: List of comments for the recipe
  *           content:
  *             application/json:
  *               schema:
@@ -39,23 +39,23 @@ const commentsRoutes: Router = express.Router();
  *                 items:
  *                   $ref: '#/components/schemas/Comment'
  *         500:
- *           description: Error finding comments for the post
+ *           description: Error finding comments for the recipe
  */
 
 /**
  * @swagger
  * paths:
- *   /comments/{postId}:
- *     post:
- *       summary: Add a new comment to a specific post
- *       description: Add a new comment to the post identified by postId.
+ *   /comments/{recipeId}:
+ *     recipe:
+ *       summary: Add a new comment to a specific recipe
+ *       description: Add a new comment to the recipe identified by recipeId.
  *       tags:
  *         - Comments
  *       parameters:
  *         - in: path
- *           name: postId
+ *           name: recipeId
  *           required: true
- *           description: The ID of the post to add a comment to
+ *           description: The ID of the recipe to add a comment to
  *           schema:
  *             type: string
  *       requestBody:
@@ -73,23 +73,23 @@ const commentsRoutes: Router = express.Router();
  *         201:
  *           description: Comment added successfully
  *         500:
- *           description: Error adding comment to post
+ *           description: Error adding comment to recipe
  */
 
 /**
  * @swagger
  * paths:
- *   /comments/{postId}/{commentId}:
+ *   /comments/{recipeId}/{commentId}:
  *     put:
- *       summary: Update a comment in a specific post
- *       description: Update the content of an existing comment in a post identified by postId and commentId.
+ *       summary: Update a comment in a specific recipe
+ *       description: Update the content of an existing comment in a recipe identified by recipeId and commentId.
  *       tags:
  *         - Comments
  *       parameters:
  *         - in: path
- *           name: postId
+ *           name: recipeId
  *           required: true
- *           description: The ID of the post the comment belongs to
+ *           description: The ID of the recipe the comment belongs to
  *           schema:
  *             type: string
  *         - in: path
@@ -120,17 +120,17 @@ const commentsRoutes: Router = express.Router();
 /**
  * @swagger
  * paths:
- *   /comments/{postId}/{commentId}:
+ *   /comments/{recipeId}/{commentId}:
  *     delete:
- *       summary: Delete a comment in a post
- *       description: Delete a specific comment identified by commentId from the post identified by postId.
+ *       summary: Delete a comment in a recipe
+ *       description: Delete a specific comment identified by commentId from the recipe identified by recipeId.
  *       tags:
  *         - Comments
  *       parameters:
  *         - in: path
- *           name: postId
+ *           name: recipeId
  *           required: true
- *           description: The ID of the post the comment belongs to
+ *           description: The ID of the recipe the comment belongs to
  *           schema:
  *             type: string
  *         - in: path
@@ -151,17 +151,17 @@ const commentsRoutes: Router = express.Router();
 /**
  * @swagger
  * paths:
- *   /comments/{postId}/{commentId}:
+ *   /comments/{recipeId}/{commentId}:
  *     get:
- *       summary: Get a specific comment from a post by its ID
- *       description: Fetch a specific comment identified by commentId from the post identified by postId.
+ *       summary: Get a specific comment from a recipe by its ID
+ *       description: Fetch a specific comment identified by commentId from the recipe identified by recipeId.
  *       tags:
  *         - Comments
  *       parameters:
  *         - in: path
- *           name: postId
+ *           name: recipeId
  *           required: true
- *           description: The ID of the post the comment belongs to
+ *           description: The ID of the recipe the comment belongs to
  *           schema:
  *             type: string
  *         - in: path
@@ -184,9 +184,9 @@ const commentsRoutes: Router = express.Router();
  */
 
 commentsRoutes.get("/:id", authMiddleware, commentsController.getCommentsById);
-commentsRoutes.post("/:postId", authMiddleware, commentsController.addCommentToPost);
-commentsRoutes.put("/:postId/:commentId", authMiddleware, commentsController.updateComment);
-commentsRoutes.delete("/:postId/:commentId", authMiddleware, commentsController.deleteComment);
-commentsRoutes.get("/:postId/:commentId", authMiddleware, commentsController.getSpecificComment);
+commentsRoutes.post("/:recipeId", authMiddleware, commentsController.addCommentToRecipe);
+commentsRoutes.put("/:recipeId/:commentId", authMiddleware, commentsController.updateComment);
+commentsRoutes.delete("/:recipeId/:commentId", authMiddleware, commentsController.deleteComment);
+commentsRoutes.get("/:recipeId/:commentId", authMiddleware, commentsController.getSpecificComment);
 
 export default commentsRoutes;

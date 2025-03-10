@@ -1,60 +1,59 @@
 import express, {Router} from "express";
 import {IComment} from "../interfaces/comment.interface";
 import {
-    addCommentToPostId,
-    deleteCommentInPost,
-    getPostCommentsById, getSpecificCommentInPost,
-    updateCommentInPost
-} from "../queries/post-queries";
+    addCommentToRecipeId, deleteCommentInRecipe,
+    getRecipeCommentsById, getSpecificCommentInRecipe, updateCommentInRecipe
+
+} from "../queries/recipe-queries";
 import { Request, Response } from 'express';
 
 
 const commentsRoutes: Router = express.Router();
 
 
-//get all comments by post id 
+//get all comments by recipe id
 const getCommentsById = async (req: Request, res: Response) => {
-    const postId: string = req.params.id;
+    const recipeId: string = req.params.id;
 
-    if (postId) {
-        const postComments: IComment[] = await getPostCommentsById(postId);
+    if (recipeId) {
+        const recipeComments: IComment[] = await getRecipeCommentsById(recipeId);
 
-        if (postComments) {
-            res.status(200).send(postComments);
+        if (recipeComments) {
+            res.status(200).send(recipeComments);
         } else {
-            res.status(500).send('error finding post');
+            res.status(500).send('error finding recipe');
         }
     } else {
-        res.status(500).send('post ID should be a number');
+        res.status(500).send('recipe ID should be a number');
     }
 };
 
 
-// add comment to post by id
-const addCommentToPost = async (req: Request, res: Response) => {
-    const postId: string = req.params.postId;
+// add comment to recipe by id
+const addCommentToRecipe = async (req: Request, res: Response) => {
+    const recipeId: string = req.params.recipeId;
     const newComment: IComment = req.body.comment;
-    if (postId) {
+    if (recipeId) {
 
-        const postComments: IComment[] = await addCommentToPostId(postId, newComment);
-        if (postComments) {
+        const recipeComments: IComment[] = await addCommentToRecipeId(recipeId, newComment);
+        if (recipeComments) {
             res.status(201).send("comment added successfully");
         } else {
-            res.status(500).send('error adding a comment to the post');
+            res.status(500).send('error adding a comment to the recipe');
         }
     } else {
-        res.status(500).send('post ID should be a number');
+        res.status(500).send('recipe ID should be a number');
     }
 
 };
 
-// Update a comment in a post
+// Update a comment in a recipe
 const updateComment = async (req: Request, res: Response) => {
-    const postId: string = req.params.postId;
+    const recipeId: string = req.params.recipeId;
     const commentId: string = req.params.commentId;
     const newContent: string = req.body.content;
 
-    const isUpdateSuccess: boolean = await updateCommentInPost(postId, commentId, newContent);
+    const isUpdateSuccess: boolean = await updateCommentInRecipe(recipeId, commentId, newContent);
 
     if(isUpdateSuccess){
         return res.status(200).send("comment updated successfully");
@@ -63,12 +62,12 @@ const updateComment = async (req: Request, res: Response) => {
     }
 };
 
-// delete a comment in a post
+// delete a comment in a recipe
 const deleteComment = async (req: Request, res: Response) => {
-    const postId: string = req.params.postId;
+    const recipeId: string = req.params.recipeId;
     const commentId: string = req.params.commentId;
 
-    const isDeleteSuccess: boolean = await deleteCommentInPost(postId, commentId);
+    const isDeleteSuccess: boolean = await deleteCommentInRecipe(recipeId, commentId);
 
     if(isDeleteSuccess){
         return res.status(200).send("comment deleted successfully");
@@ -77,12 +76,12 @@ const deleteComment = async (req: Request, res: Response) => {
     }
 };
 
-// get a specif comment by id in a post by id
+// get a specif comment by id in a recipe by id
 const getSpecificComment = async (req: Request, res: Response) => {
-    const postId: string = req.params.postId;
+    const recipeId: string = req.params.recipeId;
     const commentId: string = req.params.commentId;
 
-    const comment: IComment = await getSpecificCommentInPost(postId, commentId);
+    const comment: IComment = await getSpecificCommentInRecipe(recipeId, commentId);
 
     if(comment){
         return res.status(200).send(comment);
@@ -93,7 +92,7 @@ const getSpecificComment = async (req: Request, res: Response) => {
 
 export default {
     getCommentsById,
-    addCommentToPost,
+    addCommentToRecipe,
     updateComment,
     deleteComment,
     getSpecificComment

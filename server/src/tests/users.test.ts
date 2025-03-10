@@ -39,7 +39,7 @@ describe('User API', () => {
                 .set('Accept', 'application/json');
 
             expect(res.status).toBe(201);
-            expect(res.text).toBe('user created');
+            expect(res.body.email).toMatch(newUser.email);
 
             const userInDb = await UserModel.findOne({ email: newUser.email });
             await UserModel.deleteOne({ _id: userInDb.id });

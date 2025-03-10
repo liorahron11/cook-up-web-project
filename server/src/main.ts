@@ -1,7 +1,7 @@
 // lior-aharon-212211684-shalev-lavyoud-322930561
 
 import {connectToDB} from "./services/mongo-handler";
-import postsRoutes from './routes/posts';
+import postsRoutes from './routes/recipes';
 import express, {Express} from 'express';
 import cors from 'cors';
 import commentsRoutes from "./routes/comments";
@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(cors());
 
 const initRoutes = (app: Express) => {
-    app.use('/posts', postsRoutes);
+    app.use('/recipes', postsRoutes);
     app.use('/comments', commentsRoutes);
     app.use('/user', usersRoutes);
     app.use('/auth', authRoutes);

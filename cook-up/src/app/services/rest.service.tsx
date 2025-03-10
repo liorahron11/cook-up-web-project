@@ -1,5 +1,7 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {IUser} from "@/app/models/user.interface";
+import {getUserFromLocalStorage, LocalStorageUser} from "@/app/services/local-storage.service";
+const user: LocalStorageUser = getUserFromLocalStorage();
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: 'http://localhost:5000',
@@ -28,22 +30,32 @@ export const userLogin = async (data: Partial<IUser>) => {
     }
 }
 
-export const getPosts = async () => {
+export const getRecipes = async () => {
     try {
-        const response = await apiClient.get('/post/all');
+        const response = await apiClient.get('/recipes/all');
         return response.data;
     } catch (error) {
-        console.error('Error fetching posts:', error);
+        console.error('Error fetching recipes:', error);
         throw error;
     }
 };
 
-export const createPost = async (data: any) => {
+export const getUserRecipes = async () => {
     try {
-        const response = await apiClient.post('/post', data);
+        const response = await apiClient.get(`/recipes?sender=${user.id}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
         return response.data;
     } catch (error) {
-        console.error('Error creating post:', error);
+        console.error('Error fetching recipes:', error);
+        throw error;
+    }
+};
+
+export const createRecipe = async (data: any) => {
+    try {
+        const response = await apiClient.post('/recipes', data, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        return response.data;
+    } catch (error) {
+        console.error('Error creating recipes:', error);
         throw error;
     }
 };

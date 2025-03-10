@@ -18,18 +18,17 @@ export class UserQueriesService {
         }
     }
 
-    public addUser = async (user: IUser): Promise<boolean> => {
+    public addUser = async (user: IUser): Promise<HydratedDocument<IUser>> => {
         const userEmail: string = user.email;
         const retUser: HydratedDocument<IUser> = await User.findOne({email: userEmail});
 
         if(retUser){
             console.error('error occurred while adding user, user is exsiting');
-            return false;
+            return null;
         }
 
         const salt = await bcrypt.genSalt(10);
-        const encryptedPassword = await bcrypt.hash(user.password, salt);
-        user.password = encryptedPassword;
+        user.password = await bcrypt.hash(user.password, salt);
 
         const doc: HydratedDocument<IUser> = new User(user);
         const res: HydratedDocument<IUser> = await doc.save();
@@ -37,11 +36,11 @@ export class UserQueriesService {
         if (!res) {
             console.error('error occurred while adding user');
 
-            return false
+            return null
         } else {
             console.log(`user added successfully`);
 
-            return true;
+            return res;
         }
     }
 

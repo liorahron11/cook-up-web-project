@@ -50,8 +50,8 @@ export default function Register() {
         }
 
         registerUser(userRegisterFields)
-            .then(() => {
-            saveUserToLocalStorage({email: user.email, username: user.username});
+            .then((userRegistered) => {
+            saveUserToLocalStorage({email: userRegistered.email, username: userRegistered.username, id: userRegistered._id, accessToken: userRegistered.accessToken});
             router.push('/');
         });
     };

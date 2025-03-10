@@ -1,14 +1,14 @@
 import express, {Router} from "express";
-import postsController from "../controllers/posts-controller";
+import recipesController from "../controllers/recipes-controller";
 import {authMiddleware} from "../middlewares/authMiddleware";
-const postsRoutes: Router = express.Router();
+const recipesRoutes: Router = express.Router();
 
 
 /**
 * @swagger
 * tags:
-*   name: Posts
-*   description: The Posts API
+*   name: Recipes
+*   description: The Recipes API
 */
 
 /**
@@ -27,23 +27,23 @@ const postsRoutes: Router = express.Router();
  *         content:
  *           type: string
  *           description: The content of the comment
- *     Post:
+ *     Recipe:
  *       type: object
  *       properties:
  *         id:
  *           type: string
- *           description: The unique ID of the post
+ *           description: The unique ID of the recipe
  *         senderId:
  *           type: string
- *           description: The ID of the sender of the post
+ *           description: The ID of the sender of the recipe
  *         content:
  *           type: string
- *           description: The content of the post
+ *           description: The content of the recipe
  *         comments:
  *           type: array
  *           items:
  *             $ref: '#/components/schemas/Comment'
- *           description: List of comments associated with the post
+ *           description: List of comments associated with the recipe
  */
 
 
@@ -74,74 +74,74 @@ const postsRoutes: Router = express.Router();
  *         500:
  *           description: Error adding post
  */
-postsRoutes.post("/", authMiddleware,  postsController.addPost);
+recipesRoutes.post("/", authMiddleware,  recipesController.addRecipe);
 
 
 /**
  * @swagger
  * paths:
- *   /posts/all:
+ *   /recipe/all:
  *     get:
- *       summary: Get all posts
- *       description: Fetch all posts from the system.
+ *       summary: Get all recipes
+ *       description: Fetch all recipes from the system.
  *       tags:
- *         - Posts
+ *         - recipes
  *       security:
  *         - bearerAuth: []
  *       responses:
  *         200:
- *           description: List of all posts
+ *           description: List of all recipes
  *           content:
  *             application/json:
  *               schema:
  *                 type: array
  *                 items:
- *                   $ref: '#/components/schemas/Post'
+ *                   $ref: '#/components/schemas/recipe'
  *         500:
- *           description: Error fetching posts
+ *           description: Error fetching recipes
  */
-postsRoutes.get("/all", authMiddleware,postsController.getAllPosts);
+recipesRoutes.get("/all", authMiddleware,recipesController.getAllRecipes);
 
 
 /**
  * @swagger
  * paths:
- *   /posts/{id}:
+ *   /recipes/{id}:
  *     get:
- *       summary: Get a specific post by ID
- *       description: Fetch a post by its ID.
+ *       summary: Get a specific recipe by ID
+ *       description: Fetch a recipe by its ID.
  *       tags:
- *         - Posts
+ *         - recipes
  *       security:
  *         - bearerAuth: []
  *       parameters:
  *         - in: path
  *           name: id
  *           required: true
- *           description: The ID of the post
+ *           description: The ID of the recipe
  *           schema:
  *             type: string
  *       responses:
  *         200:
- *           description: The requested post
+ *           description: The requested recipe
  *           content:
  *             application/json:
  *               schema:
- *                 $ref: '#/components/schemas/Post'
+ *                 $ref: '#/components/schemas/Recipe'
  *         500:
- *           description: Error finding post
+ *           description: Error finding recipe
  */
-postsRoutes.get("/:id", authMiddleware, postsController.getPostById);
+recipesRoutes.get("/:id", authMiddleware, recipesController.getRecipeById);
 
 /**
  * @swagger
  * paths:
- *   /posts:
+ *   /recipes:
  *     get:
- *       summary: Get posts by sender ID
- *       description: Fetch posts sent by a specific sender.
+ *       summary: Get recipes by sender ID
+ *       description: Fetch recipes sent by a specific sender.
  *       tags:
- *         - Posts
+ *         - Recipes
  *       security:
  *         - bearerAuth: []
  *       parameters:
@@ -153,34 +153,34 @@ postsRoutes.get("/:id", authMiddleware, postsController.getPostById);
  *             type: string
  *       responses:
  *         200:
- *           description: List of posts from the sender
+ *           description: List of recipes from the sender
  *           content:
  *             application/json:
  *               schema:
  *                 type: array
  *                 items:
- *                   $ref: '#/components/schemas/Post'
+ *                   $ref: '#/components/schemas/Recipe'
  *         500:
- *           description: Error finding posts
+ *           description: Error finding recipes
  */
-postsRoutes.get("/", authMiddleware,postsController.getPostsBySenderId);
+recipesRoutes.get("/", authMiddleware,recipesController.getRecipesBySenderId);
 
 /**
  * @swagger
  * paths:
- *   /posts/{id}:
+ *   /recipes/{id}:
  *     put:
- *       summary: Update an existing post
- *       description: Update the content of an existing post by its ID.
+ *       summary: Update an existing recipe
+ *       description: Update the content of an existing recipe by its ID.
  *       tags:
- *         - Posts
+ *         - recipes
  *       security:
  *         - bearerAuth: []
  *       parameters:
  *         - in: path
  *           name: id
  *           required: true
- *           description: The ID of the post to update
+ *           description: The ID of the recipe to update
  *           schema:
  *             type: string
  *       requestBody:
@@ -192,16 +192,16 @@ postsRoutes.get("/", authMiddleware,postsController.getPostsBySenderId);
  *               properties:
  *                 content:
  *                   type: string
- *                   description: The new content for the post
+ *                   description: The new content for the recipe
  *       responses:
  *         200:
- *           description: Post updated successfully
+ *           description: recipe updated successfully
  *         500:
- *           description: Error updating post
+ *           description: Error updating recipe
  */
 
-postsRoutes.put("/:id", authMiddleware, postsController.updatePost);
+recipesRoutes.put("/:id", authMiddleware, recipesController.updateRecipe);
 
-export default postsRoutes;
+export default recipesRoutes;
 
 
