@@ -20,6 +20,17 @@ export const registerUser = async (data: Partial<IUser>) => {
     }
 }
 
+export const googleSignin = async (credentialResponse: CredentialResponse) => {
+    try {
+        console.log("sign in using google")
+        const response = await apiClient.post('/auth/googleSignin', credentialResponse);
+        return response.data;
+    } catch (error: any) {
+        console.error('Error registering user using google:', error.response.data);
+        throw error;
+    }
+}
+
 export const userLogin = async (data: Partial<IUser>) => {
     try {
         const response: AxiosResponse = await apiClient.post('/auth/login', data);

@@ -4,8 +4,9 @@ import { Request, Response } from 'express';
 import {UserQueriesService} from "../queries/user-queries";
 import {isUserValid, isLoginValuesValid} from "../services/validation-service";
 import bcrypt from "bcrypt";
+import {OAuth2Client} from 'google-auth-library';
 
-
+const client = new OAuth2Client();
 const userQueryService: UserQueriesService = new UserQueriesService();
 const jwt = require('jsonwebtoken');
 
@@ -106,6 +107,41 @@ const login = async (req: Request, res: Response) => {
     }
 };
 
+const googleSignin = async (req: Request, res: Response) => {
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        })
+        const payload = ticket.getPayload();
+        const email = payload?.email;
+        if(email != null) {
+            var user: HydratedDocument<IUser> = await userQueryService.getUserByEmail(email);
+            if(user == null) {
+                user = await userQueryService.addUser({
+                    username: payload?.name,
+                    password: '',
+                    email: email,
+                    // imgUrl: payload?.picture
+                })
+            }
+            const tokens = generateToken(user.id);
+            res.status(200).send(
+                {
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken,
+                    username: user.username,
+                    email: user.email,
+                    _id: user._id
+                });
+        } else {
+            res.status(500).send("error accourd");
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+
 
 const refresh = async (req: Request, res: Response) => {
     try {
@@ -160,5 +196,6 @@ export default {
     register,
     login,
     refresh,
-    logout
+    logout,
+    googleSignin
 };
