@@ -107,6 +107,42 @@ authRoutes.post("/login", authController.login);
 
 /**
  * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: User login using google
+ *     description: Authenticate user and return tokens
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 refreshToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 _id:
+ *                   type: string
+ *                   example: 60d0fe4f5311236168a109ca
+ *       500:
+ *         description: Server error, user not found or some information is missing or incorrect
+ */
+authRoutes.post("/googleSignin", authController.googleSignin);
+
+/**
+ * @swagger
  * /auth/refresh:
  *   post:
  *     summary: Refresh access token using refresh token

@@ -10,6 +10,7 @@ import 'moment/locale/he';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primeicons/primeicons.css';
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 moment.locale('he');
 const assistant = Assistant({
@@ -43,6 +44,9 @@ export default function RootLayout({
     const isNoNavbarPage: boolean = noNavbarRoutes.includes(usePathname());
 
     return (
+      <GoogleOAuthProvider
+      clientId="195091915679-n2245brh5hqob9ts9bhbbulg6n4vmkjl.apps.googleusercontent.com"
+      >
     <html lang="he">
     <head>
         <title>CookUp</title>
@@ -64,5 +68,6 @@ export default function RootLayout({
       </PrimeReactProvider>
       </body>
     </html>
+    </GoogleOAuthProvider>
   );
 }
