@@ -32,7 +32,7 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
         return (
             <div className="rounded overflow-hidden shadow-lg flex flex-col w-1/3">
                 <div className="relative h-auto">
-                    <img className=""
+                    <img
                          src={recipe.image}
                          alt="recipe image"/>
                 </div>

@@ -51,9 +51,9 @@ export const getRecipes = async () => {
     }
 };
 
-export const getUserRecipes = async () => {
+export const getUserRecipes = async (userId: string) => {
     try {
-        const response = await apiClient.get(`/recipes?sender=${user.id}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        const response = await apiClient.get(`/recipes?sender=${userId}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
         return response.data;
     } catch (error) {
         console.error('Error fetching recipes:', error);
