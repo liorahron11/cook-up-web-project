@@ -43,7 +43,7 @@ export const userLogin = async (data: Partial<IUser>) => {
 
 export const getRecipes = async () => {
     try {
-        const response = await apiClient.get('/recipes/all');
+        const response = await apiClient.get('/recipes/all', {headers: {Authorization: `Bearer ${user.accessToken}`}});
         return response.data;
     } catch (error) {
         console.error('Error fetching recipes:', error);

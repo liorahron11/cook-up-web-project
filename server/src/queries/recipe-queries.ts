@@ -170,3 +170,17 @@ export const getSpecificCommentInRecipe = async (recipeId: string, commentId: st
         }
     }
 }
+
+export const updateUserNameInRecipes = async (userId: string,newUsername: string): Promise<boolean> => {
+    Recipe.updateMany({ senderId: userId }, { senderUsername: newUsername })
+        .then((result) => {
+            if (result.modifiedCount > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        .catch((err) => {return false});
+        return false;
+};
+

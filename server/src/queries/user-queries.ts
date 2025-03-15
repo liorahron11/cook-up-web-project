@@ -3,6 +3,7 @@ import {DeleteResult, HydratedDocument, UpdateWriteOpResult} from "mongoose";
 import User from "../models/user.model";
 import bcrypt from "bcrypt";
 import {isIdValid} from "../services/query-utils"
+import { updateUserNameInRecipes } from "../queries/recipe-queries";
 
 
 export class UserQueriesService {
@@ -91,6 +92,7 @@ export class UserQueriesService {
 
     public updateUserUsername = async (id: string, username: string): Promise<boolean> => {
         const result: UpdateWriteOpResult = await User.updateOne({_id: id}, { $set: {username: username}});
+        await updateUserNameInRecipes(id, username);
 
         if (result.modifiedCount > 0) {
             console.log(`user ${id} username updated successfully`);

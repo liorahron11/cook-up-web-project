@@ -46,6 +46,7 @@ export default function CreateRecipe() {
         const newRecipeFields: IRecipe = {
             timestamp: new Date(),
             senderId: getUserFromLocalStorage().id,
+            senderName: getUserFromLocalStorage().username,
             title: recipe.title,
             description: recipe.description,
             ingredients: formData.ingredients,

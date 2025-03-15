@@ -19,6 +19,7 @@ const ingredientSchema = new Schema<IIngredient>({
 const recipeSchema: Schema<IRecipe, RecipeModel> = new Schema<IRecipe, RecipeModel>({
     timestamp: { type: Date, default: Date.now },
     senderId: { type: String, required: true },
+    senderName: { type: String, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
     ingredients: { type: [ingredientSchema], required: true },
