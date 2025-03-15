@@ -4,6 +4,7 @@ import moment from "moment";
 import 'moment/locale/he';
 import {IUser} from "@/app/models/user.interface";
 import { Tooltip } from 'primereact/tooltip';
+import Link from "next/link";
 moment.locale('he');
 
 export interface RecipePostProps {
@@ -21,11 +22,13 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     </div>)
     if (user) {
         userSection = (<div className="px-6 mt-4">
-                        <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block flex flex row gap-2">
-                            {user?.username}
-                            {user?.username === 'CookUp - AI' ? aiLogo : null}
-                        </span>
-                    </div>)
+            <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block">
+               <Link className="flex flex-row gap-2" href="/user-profile/[userId]" as={`/user-profile/${user.id}`}>
+                   {user?.username}
+                   {user?.username === 'CookUp - AI' ? aiLogo : null}
+               </Link>
+            </span>
+            </div>)
     }
 
     if (recipe) {
