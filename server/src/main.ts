@@ -1,16 +1,16 @@
 // lior-aharon-212211684-shalev-lavyoud-322930561
 
 import {connectToDB} from "./services/mongo-handler";
-import postsRoutes from './routes/recipes';
 import express, {Express} from 'express';
 import cors from 'cors';
 import commentsRoutes from "./routes/comments";
-import authRoutes from "./routes/auth"
-// import usersRoutes from "./routes/users";
-require('dotenv').config()
-import swaggerUI from "swagger-ui-express"
-import swaggerJsDoc from "swagger-jsdoc"
+import authRoutes from "./routes/auth";
+import swaggerUI from "swagger-ui-express";
+import swaggerJsDoc from "swagger-jsdoc";
 import usersRoutes from "./routes/users";
+import recipesRoutes from "./routes/recipes";
+import aiRoutes from "./routes/ai";
+require('dotenv').config();
 
  const options = {
     definition: {
@@ -26,13 +26,13 @@ import usersRoutes from "./routes/users";
  };
  const specs = swaggerJsDoc(options);
 
-
 const app: Express = express();
 app.use(express.json());
 app.use(cors());
 
 const initRoutes = (app: Express) => {
-    app.use('/recipes', postsRoutes);
+    app.use('/recipes', recipesRoutes);
+    app.use('/ai', aiRoutes);
     app.use('/comments', commentsRoutes);
     app.use('/user', usersRoutes);
     app.use('/auth', authRoutes);

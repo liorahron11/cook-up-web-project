@@ -48,7 +48,7 @@ export default function UserProfile() {
                                 </button>
                             </div>
                             <p className="text-sm mt-2">{userDetails.email}</p>
-                            <p className="text-sm mt-2">{postGridProps.posts.length} פוסטים</p>
+                            <p className="text-sm mt-2">{postGridProps.posts?.length} פוסטים</p>
                         </div>
                     </div>
                     <hr className="h-px my-8 w-[70vw] bg-gray-200 border-0 dark:bg-gray-700"/>

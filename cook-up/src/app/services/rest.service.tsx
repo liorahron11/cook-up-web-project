@@ -1,6 +1,7 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {IUser} from "@/app/models/user.interface";
 import {getUserFromLocalStorage, LocalStorageUser} from "@/app/services/local-storage.service";
+import {CredentialResponse} from "@react-oauth/google";
 const user: LocalStorageUser = getUserFromLocalStorage();
 
 const apiClient: AxiosInstance = axios.create({
@@ -22,7 +23,6 @@ export const registerUser = async (data: Partial<IUser>) => {
 
 export const googleSignin = async (credentialResponse: CredentialResponse) => {
     try {
-        console.log("sign in using google")
         const response = await apiClient.post('/auth/googleSignin', credentialResponse);
         return response.data;
     } catch (error: any) {
