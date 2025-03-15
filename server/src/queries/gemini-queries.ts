@@ -1,6 +1,7 @@
 import {GenerateContentResult, GenerativeModel, GoogleGenerativeAI} from "@google/generative-ai";
 import {IRecipe} from "../interfaces/recipe.interface";
 import NodeCache from "node-cache";
+import {getRecipeImage} from "./unsplash-queries";
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 export const generateRecipes = async (): Promise<IRecipe[]> => {
@@ -19,7 +20,9 @@ export const generateRecipes = async (): Promise<IRecipe[]> => {
         const match: RegExpMatchArray = result.response.text().match(/```json([\s\S]*?)```/);
         if (match) {
             const jsonString: string = match[1].trim();
-            const recipes: IRecipe[] = JSON.parse(jsonString);
+            let recipes: IRecipe[] = JSON.parse(jsonString);
+            recipes = await attachExtraInfo(recipes);
+
             cacheGeminiResponse(`recipes`, recipes);
 
             return recipes;
@@ -62,6 +65,7 @@ const getRecipesPrompt: () => string = () => {
         "    \"description\": string\n" +
         "    \"ingredients\": IIngredient[];\n" +
         "    \"instructions\": string;\n" +
+        "    \"image\": string;\n" +
         "  }\n" +
         "\n" +
         "IIngredient {\n" +
@@ -99,7 +103,22 @@ const getRecipesPrompt: () => string = () => {
         "**5. דוגמה:**\n" +
         "   במידת האפשר, תוכל להשתמש במתכון קיים כבסיס ליצירת הפורמט.\n" +
         "\n" +
-        "**6. בקשה:**\n" +
+        "**6. תמונה:**\n" +
+        "   תוסיף תיאור לתמונה לצורך חיפוש באמצעות שירות UNSPLASH. על התיאור להיות באנגלית בשתי מילים או שלושה לכל היותר. הימנע ממילה אחת שיכולה ליצור בלבול כמו למשל - FISH שיתן תמונה של דג ולא של מנה\n" +
+        "\n" +
+        "**7. בקשה:**\n" +
         "התחל עכשיו ביצירת המתכונים בפורמט JSON על פי ההנחיות המפורטות לעיל.\n" +
         "\n" + "תכתוב רק את ה-JSON ללא תוספות בשביל שאוכל להשתמש ב-JSON.parse";
 }
+
+const attachExtraInfo: (recipes: IRecipe[]) => Promise<IRecipe[]> = async (recipes: IRecipe[]): Promise<IRecipe[]> => {
+    const cookUpUserID: string = '67d56915c6bdec082a0592c6';
+
+    return Promise.all(
+        recipes.map(async (recipe: IRecipe) => {
+            const recipeImage: string = await getRecipeImage(recipe.image);
+
+            return { ...recipe, image: recipeImage, senderId: cookUpUserID, comments: [] };
+        })
+    );
+};

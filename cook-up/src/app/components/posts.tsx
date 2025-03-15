@@ -1,6 +1,8 @@
 import React from 'react';
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import moment from "moment";
+import 'moment/locale/he';
+moment.locale('he');
 
 export interface RecipePostProps {
     recipe: IRecipe | null;
@@ -11,21 +13,19 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
 
     if (recipe) {
         return (
-            <div className="rounded overflow-hidden shadow-lg flex flex-col">
-                <a href="#"></a>
-                <div className="relative"><a href="#">
-                    <img className="w-full"
-                         src="https://images.pexels.com/photos/61180/pexels-photo-61180.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=1&amp;w=500"
-                         alt="Sunset in the mountains"/>
+            <div className="rounded overflow-hidden shadow-lg flex flex-col w-1/3">
+                <div className="relative h-auto">
+                    <img className=""
+                         src={recipe.image}
+                         alt="recipe image"/>
                     <div
                         className="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25">
                     </div>
-                </a>
                 </div>
                 <div className="px-6 py-4 mb-auto">
-                    <a href="#"
+                    <span
                        className="font-medium text-lg inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2">
-                        {recipe.title}</a>
+                        {recipe.title}</span>
                     <p className="text-gray-500 text-sm">
                         {recipe.description}
                     </p>
@@ -44,7 +44,7 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
                             </g>
                         </g>
                     </svg>
-                    <span className="mr-1">{moment(recipe.timestamp).fromNow()}</span>
+                    <span className="mr-1" title={moment(recipe.timestamp).format('DD-MM-YYYY HH:mm')}>{moment(recipe.timestamp).fromNow()}</span>
                 </span>
 
                     <span className="py-1 text-xs font-regular text-gray-900 mr-1 flex flex-row items-center">

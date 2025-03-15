@@ -1,6 +1,6 @@
-import axios, {AxiosInstance} from "axios";
+import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {IRecipe} from "@server/interfaces/recipe.interface";
-
+import recipes from "@server/routes/recipes";
 const apiClient: AxiosInstance = axios.create({
     baseURL: 'http://localhost:5000',
     headers: {
@@ -8,12 +8,13 @@ const apiClient: AxiosInstance = axios.create({
     },
 });
 
-export const getAIRecipes = async () => {
+export const getAIRecipes: () => Promise<IRecipe[]> = async () => {
     try {
-        const response = await apiClient.get('/ai/recipes');
-        return response.data;
+        const response: AxiosResponse = await apiClient.get('/ai/recipes');
+
+        return response ? response.data : [];
     } catch (error: any) {
-        console.error('Error getting ai recipes:', error.response.data);
+        console.error('Error getting ai recipes:', error);
         throw error;
     }
 }
