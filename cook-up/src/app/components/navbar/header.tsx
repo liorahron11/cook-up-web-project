@@ -1,3 +1,4 @@
+import React from "react";
 import {JSX} from "react";
 import NavbarItem, {NavbarItemProps} from "@/app/components/navbar/navbar-item";
 import NavbarItemsList from "@/app/components/navbar/navbar-items-list";
@@ -12,7 +13,7 @@ export default function Header({userAvatarProps, navbarItems}: HeaderProps): JSX
         <div className="flex w-full flex-wrap items-center justify-between px-3">
             <a className="mb-4 me-5 ms-2 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:mb-0 lg:mt-0" href="#">
             <img
-                src="chef.png"
+                src="/chef.png"
                 style={{height: "30px"}}
                 alt="CookUp"
                 loading="lazy"/>
