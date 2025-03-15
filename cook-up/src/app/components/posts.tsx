@@ -1,15 +1,28 @@
-import React from 'react';
+import React, {ReactElement} from 'react';
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import moment from "moment";
 import 'moment/locale/he';
+import {IUser} from "@/app/models/user.interface";
 moment.locale('he');
 
 export interface RecipePostProps {
     recipe: IRecipe | null;
+    user?: IUser | null;
 }
 
 export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     const recipe: IRecipe | null = postProps.recipe;
+    const user: IUser | null | undefined = postProps.user;
+    let userSection: ReactElement | null = null;
+    const aiLogo: ReactElement = (<img src="gemini-logo.svg" alt="נוצר באמצעות AI" />)
+    if (user) {
+        userSection = (<div className="px-6 mt-4">
+                        <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block flex flex row gap-2">
+                            {user?.username}
+                            {user?.username === 'CookUp - AI' ? aiLogo : null}
+                        </span>
+                    </div>)
+    }
 
     if (recipe) {
         return (
@@ -22,6 +35,7 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
                         className="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25">
                     </div>
                 </div>
+                {userSection}
                 <div className="px-6 py-4 mb-auto">
                     <span
                        className="font-medium text-lg inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2">

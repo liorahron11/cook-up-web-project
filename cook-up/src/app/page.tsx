@@ -5,16 +5,27 @@ import {IRecipe} from "@server/interfaces/recipe.interface";
 import {getAIRecipes} from "@/app/services/ai-service";
 import {ProgressSpinner} from "primereact/progressspinner";
 import RecipePost from "@/app/components/posts";
+import {getUserByID} from "@/app/services/users-service";
+import {IUser} from "@/app/models/user.interface";
 
 export default function Home() {
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchRecipes = async () => {
+    const fetchRecipesData = async () => {
       try {
         const AIRecipes: IRecipe[] = await getAIRecipes();
         setRecipes(AIRecipes);
+
+        const usersData: (IUser)[] = await Promise.all(
+            AIRecipes.map(async (recipe: IRecipe) => {
+              return await getUserByID(recipe.senderId);
+            })
+        );
+
+        setUsers(usersData);
       } catch (error) {
         console.error("Error fetching recipes:", error);
       } finally {
@@ -22,7 +33,7 @@ export default function Home() {
       }
     };
 
-    fetchRecipes();
+    fetchRecipesData();
   }, []);
 
   if (loading) {
@@ -36,7 +47,7 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center gap-5 m-5">
         {recipes.map((recipe: IRecipe) => {
           return (
-            <RecipePost key={recipe.title} postProps={{recipe}}>
+            <RecipePost key={recipe.title} postProps={{recipe, user: users.find((user: IUser) => user.id === recipe.senderId)}}>
             </RecipePost>
           )
         })}

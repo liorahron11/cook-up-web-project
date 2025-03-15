@@ -1,6 +1,5 @@
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {IRecipe} from "@server/interfaces/recipe.interface";
-import recipes from "@server/routes/recipes";
 const apiClient: AxiosInstance = axios.create({
     baseURL: 'http://localhost:5000',
     headers: {
