@@ -2,6 +2,7 @@ import React from "react";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import {IIngredient} from "@server/interfaces/ingredients.interface";
 import {EIngredientUnit} from "@/app/enums/ingredient-unit.enum";
+import CommentsSection from "@/app/components/comments-section";
 
 export default function PostDetails({recipe}: { recipe: IRecipe }) {
     return (                    <div className="m-0">
@@ -27,6 +28,7 @@ export default function PostDetails({recipe}: { recipe: IRecipe }) {
                         {recipe.instructions}
                     </p>
                 </div>
+                    {Boolean(recipe.comments.length) && <div className='mb-5'><h2 className="font-bold mb-5">תגובות</h2><CommentsSection comments={recipe.comments}></CommentsSection></div>}
             </div>
         </div>
     );
