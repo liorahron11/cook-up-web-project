@@ -3,6 +3,7 @@ import {IRecipe} from "@server/interfaces/recipe.interface";
 import moment from "moment";
 import 'moment/locale/he';
 import {IUser} from "@/app/models/user.interface";
+import { Tooltip } from 'primereact/tooltip';
 moment.locale('he');
 
 export interface RecipePostProps {
@@ -14,7 +15,10 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     const recipe: IRecipe | null = postProps.recipe;
     const user: IUser | null | undefined = postProps.user;
     let userSection: ReactElement | null = null;
-    const aiLogo: ReactElement = (<img src="gemini-logo.svg" alt="נוצר באמצעות AI" />)
+    const aiLogo: ReactElement = (<div className="flex flex-row items-center justify-center">
+        <Tooltip target=".gemini-logo" position="mouse" />
+        <img className="gemini-logo" src="gemini-logo.svg" alt="נוצר באמצעות AI" data-pr-tooltip="נוצר באמצעות AI" />
+    </div>)
     if (user) {
         userSection = (<div className="px-6 mt-4">
                         <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block flex flex row gap-2">
@@ -31,9 +35,6 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
                     <img className=""
                          src={recipe.image}
                          alt="recipe image"/>
-                    <div
-                        className="hover:bg-transparent transition duration-300 absolute bottom-0 top-0 right-0 left-0 bg-gray-900 opacity-25">
-                    </div>
                 </div>
                 {userSection}
                 <div className="px-6 py-4 mb-auto">

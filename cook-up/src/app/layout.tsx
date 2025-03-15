@@ -9,6 +9,7 @@ import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primeicons/primeicons.css';
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import {createGlobalStyle} from "styled-components";
 const assistant = Assistant({
   variable: "--font-assistant",
   subsets: ["hebrew"],
@@ -31,6 +32,12 @@ const headerProps: HeaderProps = {
     ]
 };
 const noNavbarRoutes: string[] = ['/login', '/register'];
+const GlobalStyle = createGlobalStyle`
+  .p-tooltip {
+      font-family: Assistant, sans-serif;
+    font-size: 14px;
+  }
+`;
 
 export default function RootLayout({
   children,
@@ -58,6 +65,7 @@ export default function RootLayout({
         />
     </head>
       <body className={assistant.className} dir="rtl">
+      <GlobalStyle/>
       <PrimeReactProvider>
           {!isNoNavbarPage && <Header {...headerProps}></Header>}
           {children}
