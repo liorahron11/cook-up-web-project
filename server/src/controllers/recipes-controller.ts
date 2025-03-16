@@ -12,9 +12,13 @@ import {
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
-    const recipe: IRecipe = req.body.recipe;
+    const recipe: IRecipe = JSON.parse(req.body.recipe);
 
+    console.log(typeof recipe)
     if (recipe) {
+        if((req as any).file) {
+            recipe.image = (req as any).file.path;
+        }
         const recipeId: string = await addNewRecipe(recipe);
         if (recipeId != "0") {
             res.status(201).send({
