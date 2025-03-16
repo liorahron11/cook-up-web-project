@@ -10,15 +10,18 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primeicons/primeicons.css';
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import {createGlobalStyle} from "styled-components";
+import {getUserFromLocalStorage,} from "@/app/services/local-storage.service";
+
 const assistant = Assistant({
   variable: "--font-assistant",
   subsets: ["hebrew"],
   weight: '400'
 });
+const currentStoredUser = getUserFromLocalStorage();
 
 const headerProps: HeaderProps = {
     userAvatarProps: {
-        src: 'https://tecdn.b-cdn.net/img/new/avatars/2.jpg'
+        src: `${currentStoredUser.profilePictureUrl}`
     },
     navbarItems: [
         {
