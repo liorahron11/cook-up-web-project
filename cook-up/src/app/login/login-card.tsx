@@ -46,7 +46,13 @@ export default function LoginCard() {
 
         userLogin(userLoginFields)
             .then((userInfo) => {
-                saveUserToLocalStorage({email: userInfo.email, username: userInfo.username, id: userInfo._id, accessToken: userInfo.accessToken});
+                saveUserToLocalStorage({
+                    email: userInfo.email,
+                    username: userInfo.username,
+                    id: userInfo._id,
+                    profilePictureUrl: userInfo.profilePictureUrl,
+                    accessToken: userInfo.accessToken
+                    });
                 router.push('/');
             });
     };

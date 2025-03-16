@@ -6,6 +6,8 @@ const userSchema: Schema<IUser, UserModel> = new Schema<IUser, UserModel>({
     email: {type: 'String', required: true, unique: true},
     username: {type: 'String', required: true, unique: true},
     password: {type: 'String', required: true},
+    profilePictureUrl: {type: 'String'},
+    isGoogleUser: {type: 'boolean'},
     refreshToken: { type: [String], default: []}
 });
 
