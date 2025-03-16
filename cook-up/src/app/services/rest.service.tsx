@@ -2,7 +2,6 @@ import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {IUser} from "@/app/models/user.interface";
 import {getUserFromLocalStorage, LocalStorageUser} from "@/app/services/local-storage.service";
 import {CredentialResponse} from "@react-oauth/google";
-import {IRecipe} from "@server/interfaces/recipe.interface";
 const user: LocalStorageUser = getUserFromLocalStorage();
 
 const baseURL:string = 'http://localhost:5000';
@@ -64,20 +63,39 @@ export const userLogin = async (data: Partial<IUser>) => {
     }
 }
 
-export const getRecipes = async () => {
+export const getRecipes = async (page = 1, limit = 10) => {
     try {
-        const response = await apiClient.get('/recipes/all', {headers: authHeaders});
-        response.data.forEach(recipe => {
-            if(recipe?.image) {
-              recipe.image = baseURL + "/uploads/" + extractRecipeImage(recipe.image);
-            }
-        });
-        return response.data;
+      const response = await apiClient.get('/recipes/all', {
+        headers: authHeaders,
+        params: { page, limit }
+      });
+  
+      const recipes = response.data.recipes || [];
+      recipes.forEach(recipe => {
+        if (recipe?.image) {
+          recipe.image = baseURL + "/uploads/" + extractRecipeImage(recipe.image);
+        }
+      });
+  
+      return {
+        recipes: recipes,
+        pagination: response.data.pagination || {
+          total: recipes.length,
+          page,
+          limit,
+          totalPages: Math.ceil(recipes.length / limit)
+        }
+      };
     } catch (error) {
-        console.error('Error fetching recipes:', error);
-        throw error;
+      console.error('Error fetching recipes:', error);
+      throw error;
     }
-};
+  };
+  
+  // Helper function to get the next page of recipes
+  export const getNextRecipesPage = async (currentPage, limit = 10) => {
+    return getRecipes(currentPage + 1, limit);
+  };
 
 export const getUserRecipes = async (userId: string) => {
     try {
