@@ -1,6 +1,7 @@
 import express, {Router} from "express";
 import recipesController from "../controllers/recipes-controller";
 import {authMiddleware} from "../middlewares/authMiddleware";
+import {upload} from "../middlewares/imageUploaderMiddleware";
 const recipesRoutes: Router = express.Router();
 
 
@@ -74,7 +75,7 @@ const recipesRoutes: Router = express.Router();
  *         500:
  *           description: Error adding post
  */
-recipesRoutes.post("/", authMiddleware,  recipesController.addRecipe);
+recipesRoutes.post("/", authMiddleware, upload.single('photo') , recipesController.addRecipe);
 
 
 /**

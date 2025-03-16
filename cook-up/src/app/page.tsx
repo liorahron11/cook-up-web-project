@@ -7,6 +7,7 @@ import {ProgressSpinner} from "primereact/progressspinner";
 import RecipePost from "@/app/components/posts";
 import {getUserByID} from "@/app/services/users-service";
 import {IUser} from "@/app/models/user.interface";
+import {getRecipes} from "@/app/services/rest.service";
 
 export default function Home() {
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
@@ -17,10 +18,12 @@ export default function Home() {
     const fetchRecipesData = async () => {
       try {
         const AIRecipes: IRecipe[] = await getAIRecipes();
-        setRecipes(AIRecipes);
+        const usersRecipes: IRecipe[] = await getRecipes();
+        const feedRecipes: IRecipe[] = AIRecipes.concat(usersRecipes);  
+        setRecipes(feedRecipes);
 
         const usersData: (IUser)[] = await Promise.all(
-            AIRecipes.map(async (recipe: IRecipe) => {
+            feedRecipes.map(async (recipe: IRecipe) => {
               return await getUserByID(recipe.senderId);
             })
         );
