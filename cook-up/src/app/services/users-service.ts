@@ -13,7 +13,7 @@ export const getUserByID: (userId: string) => Promise<IUser> = async (userId: st
         const user: any = response.data;
 
         if (user) {
-            return {id: user._id, username: user.username, email: user.email}
+            return {id: user._id, username: user.username, email: user.email, profilePictureUrl: user.profilePictureUrl}
         }
 
         return {};

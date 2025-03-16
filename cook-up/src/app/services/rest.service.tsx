@@ -21,6 +21,20 @@ export const registerUser = async (data: Partial<IUser>) => {
     }
 }
 
+export const updateUserProfile = async (userId: string, data: FormData) => {
+    const headers = {
+        'Authorization': `Bearer ${user.accessToken}`,
+        'Content-Type': 'multipart/form-data',
+    };
+    try {
+        const response = await apiClient.put(`/user/${userId}`, data,  {headers: headers});
+        return response.data;
+    } catch (error: any) {
+        console.error('Error updating user:', error.response.data);
+        throw error;
+    }
+}
+
 export const googleSignin = async (credentialResponse: CredentialResponse) => {
     try {
         const response = await apiClient.post('/auth/googleSignin', credentialResponse);

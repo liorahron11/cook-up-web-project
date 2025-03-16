@@ -2,6 +2,7 @@ import {IUser} from "../interfaces/user.interface";
 import {DeleteResult, HydratedDocument, UpdateWriteOpResult} from "mongoose";
 import User from "../models/user.model";
 import bcrypt from "bcrypt";
+import fs from 'fs';
 import {isIdValid} from "../services/query-utils"
 
 
@@ -88,6 +89,32 @@ export class UserQueriesService {
             return false;
         }
     }
+
+    public updateUserProfilePicture = async (id: string, profilePictureUrl: string): Promise<boolean> => {
+        const userBeforeUpdate: HydratedDocument<IUser> = await this.getUserById(id);
+        if (
+            userBeforeUpdate &&
+            userBeforeUpdate.profilePictureUrl &&
+            userBeforeUpdate.profilePictureUrl !== profilePictureUrl
+          ) {
+            try {
+              await fs.promises.unlink(userBeforeUpdate.profilePictureUrl);
+            } catch (e) {
+              console.error('Could not delete image', e);
+            }
+    }
+    const result: UpdateWriteOpResult = await User.updateOne({_id: id}, { $set: {profilePictureUrl: profilePictureUrl}});
+
+    if (result.modifiedCount > 0) {
+        console.log(`user ${id} profile picture updated successfully`);
+
+        return true;
+    } else {
+        console.log('user not found or update profile picture failed');
+
+        return false;
+    }
+}
 
     public updateUserUsername = async (id: string, username: string): Promise<boolean> => {
         const result: UpdateWriteOpResult = await User.updateOne({_id: id}, { $set: {username: username}});

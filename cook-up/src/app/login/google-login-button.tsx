@@ -8,15 +8,16 @@ export default function GoogleLoginButton() {
     const router: AppRouterInstance = useRouter();
     
     const googleResponseMessage = (credentialResponse: CredentialResponse) => {
-        console.log("good");
-        console.log(credentialResponse);
         googleSignin(credentialResponse).then((response) => {
             console.log(response);
             saveUserToLocalStorage({
                 email: response.email,
                 username: response.username,
                 id: response._id,
-                accessToken: response.accessToken});
+                isGoogleUser: response.isGoogleUser,
+                accessToken: response.accessToken,
+                profilePictureUrl: response.profilePictureUrl,
+            });
             
             router.push('/');
             });

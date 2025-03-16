@@ -6,6 +6,8 @@ import {isUserValid} from "../services/validation-service";
 import isStrongPassword from "validator/lib/isStrongPassword";
 import isEmail from "validator/lib/isEmail";
 import {stringifyUpdatedUserFields} from "../services/query-utils";
+import {upload} from "../middlewares/imageUploaderMiddleware";
+import {authMiddleware} from "../middlewares/authMiddleware";
 const usersRoutes: Router = express.Router();
 const userQueryService: UserQueriesService = new UserQueriesService();
 
@@ -68,8 +70,8 @@ usersRoutes.delete('/:id', async (req, res) => {
     }
 });
 
-usersRoutes.put('/:id', async (req, res) => {
-    let {isPasswordUpdated, isUsernameUpdated, isEmailUpdated}: {isPasswordUpdated: boolean, isUsernameUpdated: boolean, isEmailUpdated: boolean} = {isPasswordUpdated: false, isUsernameUpdated: false, isEmailUpdated: false};
+usersRoutes.put('/:id' ,upload.single('profilePicture'), async (req, res) => {
+    let {isPasswordUpdated, isUsernameUpdated, isEmailUpdated, isProfilePictureUpdated}: {isPasswordUpdated: boolean, isUsernameUpdated: boolean, isEmailUpdated: boolean, isProfilePictureUpdated:boolean} = {isPasswordUpdated: false, isUsernameUpdated: false, isEmailUpdated: false, isProfilePictureUpdated: false};
     let moreInfo: string = "";
     const userId: string = req.params.id;
 
@@ -78,6 +80,16 @@ usersRoutes.put('/:id', async (req, res) => {
         isPasswordUpdated = await userQueryService.updateUserPassword(userId, password);
     } else {
         moreInfo += "password is missing or not strong enough. ";
+    }
+
+    var profilePictureUrl: string = null;
+    if((req as any).file){
+        profilePictureUrl = (req as any).file.path;
+    }
+    if (profilePictureUrl) {
+        isProfilePictureUpdated = await userQueryService.updateUserProfilePicture(userId, profilePictureUrl);
+    } else {
+        moreInfo += "profile picture is missing ";
     }
 
     const username: string = req.body.username?.toString();
@@ -94,8 +106,8 @@ usersRoutes.put('/:id', async (req, res) => {
         moreInfo += "email is missing or not valid. ";
     }
 
-    if (isPasswordUpdated || isUsernameUpdated || isEmailUpdated){
-        return res.status(200).send(`${stringifyUpdatedUserFields(isPasswordUpdated, isUsernameUpdated, isEmailUpdated)} updated successfully. ${moreInfo}`);
+    if (isPasswordUpdated || isUsernameUpdated || isEmailUpdated || isProfilePictureUpdated){
+        return res.status(200).send(`${stringifyUpdatedUserFields(isPasswordUpdated, isUsernameUpdated, isEmailUpdated, isProfilePictureUpdated)} updated successfully. ${moreInfo}`);
     } else {
         res.status(500).send(`user not found or content up to date. ${moreInfo}`);
     }
