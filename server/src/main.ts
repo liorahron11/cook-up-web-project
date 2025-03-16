@@ -31,6 +31,7 @@ app.use(express.json());
 app.use(cors());
 
 const initRoutes = (app: Express) => {
+    app.use('/uploads', express.static('Images'));
     app.use('/recipes', recipesRoutes);
     app.use('/ai', aiRoutes);
     app.use('/comments', commentsRoutes);

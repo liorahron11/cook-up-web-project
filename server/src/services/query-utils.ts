@@ -7,13 +7,16 @@ export const isIdValid = (id: string): boolean => {
     return false;
 }
 
-export const stringifyUpdatedUserFields = (isPasswordUpdated: boolean, isUsernameUpdated: boolean ,isEmailUpdated: boolean): string => {
+export const stringifyUpdatedUserFields = (isPasswordUpdated: boolean, isUsernameUpdated: boolean ,isEmailUpdated: boolean, isProfilePictureUpdated: boolean): string => {
     let updatedFields: string = '';
     if (isPasswordUpdated) {
         updatedFields += 'password ';
     }
     if (isUsernameUpdated) {
         updatedFields += 'username ';
+    }
+    if (isProfilePictureUpdated) {
+        updatedFields += 'profile picture ';
     }
     if (isEmailUpdated) {
         updatedFields += 'email ';

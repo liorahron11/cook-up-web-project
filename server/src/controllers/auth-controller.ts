@@ -90,7 +90,8 @@ const login = async (req: Request, res: Response) => {
                             refreshToken: tokens.refreshToken,
                             username: retUser.username,
                             email: retUser.email,
-                            _id: retUser._id
+                            _id: retUser._id,
+                            profilePictureUrl: retUser.profilePictureUrl
                         });
                 
                 } else {
@@ -121,8 +122,9 @@ const googleSignin = async (req: Request, res: Response) => {
                 user = await userQueryService.addUser({
                     username: payload?.name,
                     password: '',
+                    isGoogleUser: true,
                     email: email,
-                    // imgUrl: payload?.picture
+                    profilePictureUrl: payload?.picture
                 })
             }
             const tokens = generateToken(user.id);
@@ -132,6 +134,8 @@ const googleSignin = async (req: Request, res: Response) => {
                     refreshToken: tokens.refreshToken,
                     username: user.username,
                     email: user.email,
+                    isGoogleUser: user.isGoogleUser,
+                    profilePictureUrl: user.profilePictureUrl,
                     _id: user._id
                 });
         } else {
