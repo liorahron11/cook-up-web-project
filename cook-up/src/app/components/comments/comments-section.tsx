@@ -61,6 +61,8 @@ export default function CommentsSection({ recipe }: { recipe: IRecipe }) {
                 {recipeData.comments.map((comment: IComment) => (
                     <div key={comment.id}>
                         <Comment
+                            reloadEvent={reloadData}
+                            recipe={recipe}
                             comment={comment}
                             user={users.find((user: IUser) => user.id === comment.senderId) as IUser}
                             key={comment.id}

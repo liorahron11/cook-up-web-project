@@ -4,8 +4,9 @@ import {IRecipe} from "@server/interfaces/recipe.interface";
 import Input, {IInputProps} from "@/app/login/input";
 import {FieldErrors, FieldValues, useForm} from "react-hook-form";
 import {postCommentOnPost} from "@/app/services/rest.service";
+import {IComment} from "@server/interfaces/comment.interface";
 
-export default function AddComment({ recipe, reloadEvent }: { recipe: IRecipe, reloadEvent: () => void }) {
+export default function AddComment({ recipe, comment, reloadEvent }: { recipe: IRecipe, comment?: IComment, reloadEvent: () => void }) {
     const [commentData, setCommentData] = useState<{content: string}>({
         content: '',
     });
@@ -28,8 +29,8 @@ export default function AddComment({ recipe, reloadEvent }: { recipe: IRecipe, r
         };
     const { register, handleSubmit, formState: { errors } } = useForm<{content: string}>({ reValidateMode: 'onSubmit'});
     const onSubmit = (data: {content: string}) => {
-        postCommentOnPost(recipe.id as string, data.content)
-            .then((res) => {
+        postCommentOnPost(recipe.id as string, data.content, comment?.id)
+            .then(() => {
                 reloadEvent();
             });
     };

@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import {IComment} from "../interfaces/comment.interface";
+import comments from "../routes/comments";
 
 
 export const isIdValid = (id: string): boolean => {
@@ -22,4 +24,19 @@ export const stringifyUpdatedUserFields = (isPasswordUpdated: boolean, isUsernam
         updatedFields += 'email ';
     }
     return updatedFields;
+}
+
+export const addReplyRecursive = (comments: any[], parentCommentId: string, newReply: IComment) => {
+    for (let comment of comments) {
+        if (comment._id.toString() === parentCommentId) {
+            comment.comments.push(newReply);
+            return true;
+        }
+
+        if (comment.comments.length > 0) {
+            const added = addReplyRecursive(comment.comments, parentCommentId, newReply);
+            if (added) return true;
+        }
+    }
+    return false;
 }

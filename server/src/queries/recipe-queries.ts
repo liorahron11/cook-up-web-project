@@ -2,7 +2,7 @@ import {IRecipe} from "../interfaces/recipe.interface";
 import {HydratedDocument, UpdateWriteOpResult} from "mongoose";
 import Recipe, {Comment} from "../models/recipe.model";
 import { IComment } from "../interfaces/comment.interface";
-import {isIdValid} from "../services/query-utils"
+import {addReplyRecursive, isIdValid} from "../services/query-utils"
 
 export const addNewRecipe = async (recipe: IRecipe): Promise<string> => {
     try {
@@ -101,7 +101,7 @@ export const getRecipeCommentsById = async (id: string): Promise<IComment[]> => 
     }
 }
 
-export const addCommentToRecipeId = async (id: string, comment: IComment): Promise<IComment[]> => {
+export const addCommentToRecipeId = async (id: string, comment: IComment, parentCommentId: string): Promise<IComment[]> => {
     const recipe: HydratedDocument<IRecipe> = await fetchRecipeById(id);
     const newComment = await Comment.create({
         senderId: comment.senderId,
@@ -113,12 +113,26 @@ export const addCommentToRecipeId = async (id: string, comment: IComment): Promi
         console.error(`didnt find recipe ${id}`);
     } else {
         console.log(`recipe ${id} found successfully`);
+        let updatedRecipe;
 
-        const updatedRecipe = await Recipe.findByIdAndUpdate(
-            id,
-            { $push: { comments: newComment } },
-            { new: true }
-        );
+        if (!parentCommentId) {
+            updatedRecipe = await Recipe.findByIdAndUpdate(
+                id,
+                { $push: { comments: newComment } },
+                { new: true }
+            );
+        } else {
+            const recipe = await fetchRecipeById(id);
+            const isAdded: boolean = addReplyRecursive(recipe.comments, parentCommentId, newComment);
+
+            if (isAdded) {
+                recipe.markModified("comments");
+                await recipe.save();
+                updatedRecipe = recipe;
+            } else {
+                throw new Error("Parent comment not found");
+            }
+        }
 
         if (!updatedRecipe) {
             throw new Error("Recipe not found");

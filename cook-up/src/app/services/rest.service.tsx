@@ -133,7 +133,7 @@ export const createRecipe = async (data: any) => {
     }
 };
 
-export const postCommentOnPost = (recipeId: string, content: string) => {
+export const postCommentOnPost = (recipeId: string, content: string, parentCommentId?: string) => {
     try {
         const commentToPost: IComment = {
             content: content,
@@ -141,7 +141,7 @@ export const postCommentOnPost = (recipeId: string, content: string) => {
             comments: [],
             timestamp: new Date(),
         }
-        return apiClient.post(`/comments/${recipeId}`, {comment: commentToPost}, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        return apiClient.post(`/comments/${recipeId}`, {comment: commentToPost, parentCommentId}, {headers: {Authorization: `Bearer ${user.accessToken}`}});
     } catch (error) {
         console.error('Error posting comment:', error);
         throw error;

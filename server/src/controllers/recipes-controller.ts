@@ -10,6 +10,8 @@ import {
     updateRecipeDetails
 } from "../queries/recipe-queries";
 import {generateRecipes} from "../queries/gemini-queries";
+import {IComment} from "../interfaces/comment.interface";
+import comments from "../routes/comments";
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
@@ -124,17 +126,19 @@ const parseRecipe = (recipe) => {
         description: recipe.description,
         ingredients: recipe.ingredients,
         instructions: recipe.instructions,
-        comments: recipe.comments.map((comment) => {
-            return {
-                id: comment._id,
-                timestamp: comment.timestamp,
-                senderId: comment.senderId,
-                content: comment.content,
-                comments: comment.comments
-            }
-        }),
+        comments: parseComments(recipe.comments),
         image: recipe.image
     };
+}
+
+const parseComments = (comments: any[]) => {
+    return comments.map((comment) => ({
+        id: comment._id.toString(),
+        senderId: comment.senderId,
+        content: comment.content,
+        timestamp: comment.timestamp,
+        comments: parseComments(comment.comments),
+    }));
 }
 
 export default {
