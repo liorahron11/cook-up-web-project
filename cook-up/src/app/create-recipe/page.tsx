@@ -49,7 +49,7 @@ export default function CreateRecipe() {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setPhoto(file);
-            
+
             const reader = new FileReader();
             reader.onload = () => {
                 setPhotoPreview(reader.result as string);
@@ -73,7 +73,7 @@ export default function CreateRecipe() {
     const { register, handleSubmit, formState: { errors } } = useForm<IRecipe>({ reValidateMode: 'onSubmit'});
     const onSubmit = (recipe: IRecipe) => {
         const formDataToSend = new FormData();
-        
+
         const newRecipeFields: IRecipe = {
             timestamp: new Date(),
             senderId: getUserFromLocalStorage().id,
@@ -85,7 +85,7 @@ export default function CreateRecipe() {
         };
 
         formDataToSend.append('recipe', JSON.stringify(newRecipeFields));
-        
+
         if (photo) {
             formDataToSend.append('photo', photo);
         }
@@ -169,7 +169,7 @@ export default function CreateRecipe() {
                                       registerAction={register}></Input>;
                     }
                 })}
-                
+
                 <div className="space-y-2">
                     <label htmlFor={PHOTO_FIELD_ID} className="block text-sm font-medium text-gray-900 dark:text-white">
                         תמונת המתכון
@@ -182,10 +182,10 @@ export default function CreateRecipe() {
                         ref={fileInputRef}
                         className="hidden"
                     />
-                    
+
                     <div className="flex flex-col items-center justify-center w-full">
                         {!photoPreview ? (
-                            <div 
+                            <div
                                 onClick={handlePhotoUploadClick}
                                 className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:hover:bg-gray-600 dark:bg-gray-700 dark:border-gray-600"
                             >
@@ -204,9 +204,9 @@ export default function CreateRecipe() {
                         ) : (
                             <div className="relative w-full">
                                 <div className="relative w-full h-64 overflow-hidden rounded-lg shadow-md">
-                                    <img 
-                                        src={photoPreview} 
-                                        alt="תצוגה מקדימה של תמונת המתכון" 
+                                    <img
+                                        src={photoPreview}
+                                        alt="תצוגה מקדימה של תמונת המתכון"
                                         className="w-full h-full object-cover"
                                     />
                                     <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">

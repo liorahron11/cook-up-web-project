@@ -9,6 +9,9 @@ import {
     fetchRecipesBySender,
     updateRecipeDetails
 } from "../queries/recipe-queries";
+import {generateRecipes} from "../queries/gemini-queries";
+import {IComment} from "../interfaces/comment.interface";
+import comments from "../routes/comments";
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
@@ -34,21 +37,26 @@ const addRecipe = async (req: Request, res: Response) => {
 
 const getAllRecipes = async (req: Request, res: Response) => {
     try {
+        if (Math.random() < 0.1) {
+            await generateRecipes();
+        }
+
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
 
       const { recipes, total } = await fetchAllRecipes(skip, limit);
-      
+
       if (recipes) {
-        res.status(200).send({
-          recipes,
-          pagination: {
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit)
-          }
+          const parsedRecipes = recipes.map((recipe) => parseRecipe(recipe));
+          res.status(200).send({
+              recipes: parsedRecipes,
+              pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+              }
         });
       } else {
         res.status(500).send({ error: "Failed to retrieve recipes" });
@@ -64,9 +72,8 @@ const getRecipeById = async (req: Request, res: Response) => {
 
     if (recipeId) {
         const recipe: HydratedDocument<IRecipe> = await fetchRecipeById(recipeId);
-
         if (recipe) {
-            res.status(200).send(recipe);
+            res.status(200).send(parseRecipe(recipe));
         } else {
             res.status(500).send('error finding recipe');
         }
@@ -82,7 +89,8 @@ const getRecipesBySenderId = async (req: Request, res: Response) => {
         const recipes: HydratedDocument<IRecipe>[] = await fetchRecipesBySender(senderId);
 
         if (recipes) {
-            res.status(200).send(recipes);
+            const parsedRecipes = recipes.map((recipe) => parseRecipe(recipe));
+            res.status(200).send(parsedRecipes);
         } else {
             res.status(500).send('error finding recipes');
         }
@@ -107,6 +115,31 @@ const updateRecipe = async (req: Request, res: Response) => {
         res.status(500).send('recipe ID not exist');
     }
 };
+
+const parseRecipe = (recipe) => {
+    return {
+        id: recipe._id,
+        isAI: recipe.isAI,
+        title: recipe.title,
+        senderId: recipe.senderId,
+        timestamp: recipe.timestamp,
+        description: recipe.description,
+        ingredients: recipe.ingredients,
+        instructions: recipe.instructions,
+        comments: parseComments(recipe.comments),
+        image: recipe.image
+    };
+}
+
+const parseComments = (comments: any[]) => {
+    return comments.map((comment) => ({
+        id: comment._id.toString(),
+        senderId: comment.senderId,
+        content: comment.content,
+        timestamp: comment.timestamp,
+        comments: parseComments(comment.comments),
+    }));
+}
 
 export default {
     addRecipe,

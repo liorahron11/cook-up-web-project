@@ -1,9 +1,12 @@
-import React, {ReactElement} from 'react';
+import React, {ReactElement, useState} from 'react';
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import moment from "moment";
 import 'moment/locale/he';
 import {IUser} from "@/app/models/user.interface";
 import { Tooltip } from 'primereact/tooltip';
+import Link from "next/link";
+import {Dialog} from "primereact/dialog";
+import PostDetails from "@/app/components/post-details";
 moment.locale('he');
 
 export interface RecipePostProps {
@@ -12,25 +15,31 @@ export interface RecipePostProps {
 }
 
 export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
+    const [isVisible, setIsVisible] = useState<boolean>(false);
     const recipe: IRecipe | null = postProps.recipe;
     const user: IUser | null | undefined = postProps.user;
     let userSection: ReactElement | null = null;
+    const headerContent: ReactElement = (<div className=""><h2>{user?.username}</h2></div>);
+
     const aiLogo: ReactElement = (<div className="flex flex-row items-center justify-center">
         <Tooltip target=".gemini-logo" position="mouse" />
         <img className="gemini-logo" src="gemini-logo.svg" alt="נוצר באמצעות AI" data-pr-tooltip="נוצר באמצעות AI" />
     </div>)
     if (user) {
         userSection = (<div className="px-6 mt-4">
-                        <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block flex flex row gap-2">
-                            {user?.username}
-                            {user?.username === 'CookUp - AI' ? aiLogo : null}
-                        </span>
-                    </div>)
+            <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block">
+               <Link className="flex flex-row gap-2" href="/user-profile/[userId]" as={`/user-profile/${user.id}`}>
+                   {recipe?.isAI ? 'CookUp - AI' : user?.username}
+                   {recipe?.isAI ? aiLogo : null}
+               </Link>
+            </span>
+            </div>)
     }
 
     if (recipe) {
         return (
-            <div className="rounded overflow-hidden shadow-lg flex flex-col w-1/3">
+            <div className=" w-1/3">
+            <div className="rounded overflow-hidden shadow-lg flex flex-col" onClick={() => setIsVisible(true)}>
                 <div className="relative h-auto">
                     <img
                          src={recipe.image}
@@ -71,7 +80,12 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
                     <span className="mr-1">{recipe.comments.length} תגובות</span>
                 </span>
                 </div>
-            </div>);
+            </div>
+                <Dialog draggable={false} header={headerContent} visible={isVisible} style={{ width: '50vw' }} onHide={() => {if (!isVisible) return; setIsVisible(false); }}>
+                    <PostDetails recipe={recipe}></PostDetails>
+                </Dialog>
+            </div>
+                );
     }
 
     return null;

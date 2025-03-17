@@ -1,14 +1,14 @@
 'use client'
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { IRecipe } from "@server/interfaces/recipe.interface";
-import { getAIRecipes } from "@/app/services/ai-service";
 import { ProgressSpinner } from "primereact/progressspinner";
 import RecipePost from "@/app/components/posts";
 import { getUserByID } from "@/app/services/users-service";
 import { IUser } from "@/app/models/user.interface";
 import { getRecipes } from "@/app/services/rest.service";
 import { Button } from "primereact/button";
+import _ from "lodash";
 
 export default function Home() {
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
@@ -56,14 +56,11 @@ export default function Home() {
   const fetchInitialData = async () => {
     try {
       setLoading(true);
-      
-      const AIRecipes: IRecipe[] = await getAIRecipes();
-
       const recipesResponse = await getRecipes(1, 10);
       const usersRecipes = recipesResponse.recipes;
       setPagination(recipesResponse.pagination);
       
-      const feedRecipes: IRecipe[] = [...AIRecipes, ...usersRecipes];
+      const feedRecipes: IRecipe[] = _.shuffle(usersRecipes);
 
       setRecipes(feedRecipes);
 
@@ -79,9 +76,9 @@ export default function Home() {
 
   const fetchUsersForRecipes = async (recipesToFetch: IRecipe[]) => {
     try {
-      const usersData = await Promise.all(
-        recipesToFetch.map(async (recipe: IRecipe) => {
-          return await getUserByID(recipe.senderId);
+      const senderIds: string[] = Array.from(new Set(recipesToFetch.map((recipe: IRecipe) => recipe.senderId)))
+      const usersData: IUser[] = await Promise.all(senderIds.map(async (senderId: string) => {
+          return await getUserByID(senderId);
         })
       );
       setUsers(prevUsers => {
@@ -132,7 +129,7 @@ export default function Home() {
         <>
           {recipes.map((recipe: IRecipe) => (
             <RecipePost 
-              key={`${recipe.id || recipe.title}`} 
+              key={`${recipe.id}`}
               postProps={{
                 recipe, 
                 user: users.find((user: IUser) => user.id === recipe.senderId)

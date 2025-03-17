@@ -2,6 +2,7 @@ import {GenerateContentResult, GenerativeModel, GoogleGenerativeAI} from "@googl
 import {IRecipe} from "../interfaces/recipe.interface";
 import NodeCache from "node-cache";
 import {getRecipeImage} from "./unsplash-queries";
+import {addNewRecipe} from "./recipe-queries";
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 export const generateRecipes = async (): Promise<IRecipe[]> => {
@@ -23,6 +24,10 @@ export const generateRecipes = async (): Promise<IRecipe[]> => {
             let recipes: IRecipe[] = JSON.parse(jsonString);
             recipes = await attachExtraInfo(recipes);
 
+            for (const recipe of recipes) {
+                recipe.isAI = true;
+                await addNewRecipe(recipe);
+            }
             cacheGeminiResponse(`recipes`, recipes);
 
             return recipes;
@@ -50,7 +55,7 @@ const getCachedResponse: () => IRecipe[] = () => {
 }
 
 const getRecipesPrompt: () => string = () => {
-    return  "כתוב רשימה של 5 מתכונים מקצועית ויסודית . המתכונים צריכים להיות מפורטים ומותאמים לקהל של טבחים מקצועיים. בצע את ההנחיות הבאות:\n" +
+    return  "כתוב רשימה של 5 מתכונים מקצועית ויסודית . המתכונים צריכים להיות בעברית, מפורטים ומותאמים לקהל של טבחים מקצועיים. בצע את ההנחיות הבאות:\n" +
         "\n" +
         "**1. פורמט JSON:**\n" +
         "   המתכון חייב להיות בפורמט JSON תקני.\n" +
@@ -99,9 +104,13 @@ const getRecipesPrompt: () => string = () => {
         "   * ציין טמפרטורות בישול מדויקות (למשל: 180 מעלות צלזיוס).\n" +
         "   * ציין זמני בישול מדוייקים (למשל: 30 דקות, עד להזהבה).\n" +
         "   * הוסף הערות מיוחדות לכל שלב (למשל: \"יש לערבב כל הזמן\", \"להקפיד לא לשרוף\").\n" +
+        "   * הוסף ירידת שורה לאחר כל שלב.\n" +
         "\n" +
         "**5. דוגמה:**\n" +
         "   במידת האפשר, תוכל להשתמש במתכון קיים כבסיס ליצירת הפורמט.\n" +
+        "\n" +
+        "**6. מצרכים:**\n" +
+        "השתמש ב-ENUM הנתון EIngredientUnit על מנת לציין את יחידות המידה של המצרכים. השתמש בערך באנגלית לפי ה-ENUM.\n" +
         "\n" +
         "**6. תמונה:**\n" +
         "   תוסיף תיאור לתמונה לצורך חיפוש באמצעות שירות UNSPLASH. על התיאור להיות באנגלית בשתי מילים או שלושה לכל היותר. הימנע ממילה אחת שיכולה ליצור בלבול כמו למשל - FISH שיתן תמונה של דג ולא של מנה\n" +

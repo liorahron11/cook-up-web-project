@@ -1,8 +1,8 @@
 import {IRecipe} from "../interfaces/recipe.interface";
 import {HydratedDocument, UpdateWriteOpResult} from "mongoose";
-import Recipe from "../models/recipe.model";
+import Recipe, {Comment} from "../models/recipe.model";
 import { IComment } from "../interfaces/comment.interface";
-import {isIdValid} from "../services/query-utils"
+import {addReplyRecursive, isIdValid, removeCommentRecursive} from "../services/query-utils"
 
 export const addNewRecipe = async (recipe: IRecipe): Promise<string> => {
     try {
@@ -63,7 +63,7 @@ export const fetchRecipeById = async (id: string): Promise<HydratedDocument<IRec
 }
 
 export const fetchRecipesBySender = async (senderId: string): Promise<HydratedDocument<IRecipe>[]> => {
-    const recipes: HydratedDocument<IRecipe>[] = await Recipe.find({senderId})
+    const recipes: HydratedDocument<IRecipe>[] = await Recipe.find({senderId});
 
     if (!recipes) {
         console.error(`didnt find recipes for sender ${senderId}`);
@@ -101,19 +101,42 @@ export const getRecipeCommentsById = async (id: string): Promise<IComment[]> => 
     }
 }
 
-export const addCommentToRecipeId = async (id: string, comment: IComment): Promise<IComment[]> => {
+export const addCommentToRecipeId = async (id: string, comment: IComment, parentCommentId: string): Promise<IComment[]> => {
     const recipe: HydratedDocument<IRecipe> = await fetchRecipeById(id);
+    const newComment = await Comment.create({
+        senderId: comment.senderId,
+        content: comment.content,
+        comments: []
+    });
 
     if (!recipe) {
         console.error(`didnt find recipe ${id}`);
     } else {
         console.log(`recipe ${id} found successfully`);
-    
-        const updatedRecipe = await Recipe.findOneAndUpdate(
-            { _id: id },   
-            { $push: { comments: comment } },  
-            { new: true }                      
-        );
+        let updatedRecipe;
+
+        if (!parentCommentId) {
+            updatedRecipe = await Recipe.findByIdAndUpdate(
+                id,
+                { $push: { comments: newComment } },
+                { new: true }
+            );
+        } else {
+            const recipe = await fetchRecipeById(id);
+            const isAdded: boolean = addReplyRecursive(recipe.comments, parentCommentId, newComment);
+
+            if (isAdded) {
+                recipe.markModified("comments");
+                await recipe.save();
+                updatedRecipe = recipe;
+            } else {
+                throw new Error("Parent comment not found");
+            }
+        }
+
+        if (!updatedRecipe) {
+            throw new Error("Recipe not found");
+        }
 
         return updatedRecipe.comments;
     }
@@ -141,25 +164,25 @@ export const updateCommentInRecipe = async (recipeId: string, commentId: string 
 
 export const deleteCommentInRecipe = async (recipeId: string, commentId: string): Promise<boolean> => {
     try {
-        const recipe: HydratedDocument<IRecipe> = await Recipe.findOneAndUpdate(
-            {_id: recipeId},
-            {$pull: { comments: { _id: commentId } }},
-            { new: true }
-        );
-    
+        const recipe = await Recipe.findById(recipeId);
         if (!recipe) {
-            console.error(`didnt find recipe ${recipeId}`);
+            console.error("Recipe not found");
             return false;
-        } else {
-            
-            console.log(`remove comment ${commentId} in recipe ${recipeId}`);
-            return true;
         }
+
+        const removed = removeCommentRecursive(recipe.comments, commentId);
+        if (!removed) {
+            console.error("Error removing comment");
+            return false;
+        }
+
+        recipe.markModified("comments");
+        await recipe.save();
+        return true;
     } catch (error) {
         console.error(error);
         return false;
     }
-    
 }
 
 export const getSpecificCommentInRecipe = async (recipeId: string, commentId: string): Promise<IComment> => {

@@ -11,4 +11,5 @@ export interface IRecipe {
     instructions: string;
     comments: IComment[];
     image?: string;
+    isAI?: boolean;
 }
