@@ -2,7 +2,7 @@ import {IRecipe} from "../interfaces/recipe.interface";
 import {HydratedDocument, UpdateWriteOpResult} from "mongoose";
 import Recipe, {Comment} from "../models/recipe.model";
 import { IComment } from "../interfaces/comment.interface";
-import {addReplyRecursive, isIdValid} from "../services/query-utils"
+import {addReplyRecursive, isIdValid, removeCommentRecursive} from "../services/query-utils"
 
 export const addNewRecipe = async (recipe: IRecipe): Promise<string> => {
     try {
@@ -164,25 +164,25 @@ export const updateCommentInRecipe = async (recipeId: string, commentId: string 
 
 export const deleteCommentInRecipe = async (recipeId: string, commentId: string): Promise<boolean> => {
     try {
-        const recipe: HydratedDocument<IRecipe> = await Recipe.findOneAndUpdate(
-            {_id: recipeId},
-            {$pull: { comments: { _id: commentId } }},
-            { new: true }
-        );
-    
+        const recipe = await Recipe.findById(recipeId);
         if (!recipe) {
-            console.error(`didnt find recipe ${recipeId}`);
+            console.error("Recipe not found");
             return false;
-        } else {
-            
-            console.log(`remove comment ${commentId} in recipe ${recipeId}`);
-            return true;
         }
+
+        const removed = removeCommentRecursive(recipe.comments, commentId);
+        if (!removed) {
+            console.error("Error removing comment");
+            return false;
+        }
+
+        recipe.markModified("comments");
+        await recipe.save();
+        return true;
     } catch (error) {
         console.error(error);
         return false;
     }
-    
 }
 
 export const getSpecificCommentInRecipe = async (recipeId: string, commentId: string): Promise<IComment> => {

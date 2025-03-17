@@ -40,3 +40,18 @@ export const addReplyRecursive = (comments: any[], parentCommentId: string, newR
     }
     return false;
 }
+
+export const removeCommentRecursive = (comments: any[], commentIdToRemove: string) => {
+    for (let i = 0; i < comments.length; i++) {
+        if (comments[i]._id.toString() === commentIdToRemove) {
+            comments.splice(i, 1);
+            return true;
+        }
+
+        if (comments[i].comments.length > 0) {
+            const removed = removeCommentRecursive(comments[i].comments, commentIdToRemove);
+            if (removed) return true;
+        }
+    }
+    return false;
+}

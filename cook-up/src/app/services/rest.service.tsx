@@ -64,7 +64,6 @@ export const userLogin = async (data: Partial<IUser>) => {
         throw error;
     }
 }
-
 export const getRecipes = async (page = 1, limit = 10) => {
     try {
       const response = await apiClient.get('/recipes/all', {
@@ -144,6 +143,15 @@ export const postCommentOnPost = (recipeId: string, content: string, parentComme
         return apiClient.post(`/comments/${recipeId}`, {comment: commentToPost, parentCommentId}, {headers: {Authorization: `Bearer ${user.accessToken}`}});
     } catch (error) {
         console.error('Error posting comment:', error);
+        throw error;
+    }
+}
+
+export const removeComment = (recipeId: string, commentId: string) => {
+    try {
+        return apiClient.delete(`/comments/${recipeId}/${commentId}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+    } catch (error) {
+        console.error('Error deleting comment:', error);
         throw error;
     }
 }

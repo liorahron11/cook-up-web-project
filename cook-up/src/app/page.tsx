@@ -129,7 +129,7 @@ export default function Home() {
         <>
           {recipes.map((recipe: IRecipe) => (
             <RecipePost 
-              key={`${recipe.id || recipe.title}`} 
+              key={`${recipe.id}`}
               postProps={{
                 recipe, 
                 user: users.find((user: IUser) => user.id === recipe.senderId)

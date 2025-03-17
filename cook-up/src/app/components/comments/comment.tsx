@@ -2,7 +2,6 @@ import React, {ReactElement, useState} from "react";
 import {IComment} from "@server/interfaces/comment.interface";
 import CommentHeader from "@/app/components/comments/comment-header";
 import {IUser} from "@/app/models/user.interface";
-import Divider from "@/app/login/divider";
 import AddComment from "@/app/components/comments/add-comment";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 
@@ -11,7 +10,7 @@ export default function Comment({ comment, user, recipe, reloadEvent }: { commen
     const replySection: ReactElement = (<AddComment recipe={recipe} comment={comment} reloadEvent={reloadEvent}></AddComment>);
 
     return (<article className="p-6 text-base bg-white rounded-lg dark:bg-gray-900">
-                    <CommentHeader user={user} timestamp={comment.timestamp}></CommentHeader>
+                    <CommentHeader commentId={comment.id as string} recipe={recipe} user={user} timestamp={comment.timestamp} reloadEvent={reloadEvent}></CommentHeader>
                     <p className="text-gray-500 dark:text-gray-400">{comment.content}</p>
                     <div className="flex items-center mt-4 space-x-4">
                         <button type="button" onClick={() => setShowReplySection(!showReplySection)}
