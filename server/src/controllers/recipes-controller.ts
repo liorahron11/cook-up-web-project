@@ -9,6 +9,7 @@ import {
     fetchRecipesBySender,
     updateRecipeDetails
 } from "../queries/recipe-queries";
+import {generateRecipes} from "../queries/gemini-queries";
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
@@ -34,6 +35,10 @@ const addRecipe = async (req: Request, res: Response) => {
 
 const getAllRecipes = async (req: Request, res: Response) => {
     try {
+        if (Math.random() < 0.1) {
+            await generateRecipes();
+        }
+
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const skip = (page - 1) * limit;
@@ -43,7 +48,7 @@ const getAllRecipes = async (req: Request, res: Response) => {
       if (recipes) {
           const parsedRecipes = recipes.map((recipe) => parseRecipe(recipe));
           res.status(200).send({
-              parsedRecipes,
+              recipes: parsedRecipes,
               pagination: {
                 total,
                 page,
@@ -112,6 +117,7 @@ const updateRecipe = async (req: Request, res: Response) => {
 const parseRecipe = (recipe) => {
     return {
         id: recipe._id,
+        isAI: recipe.isAI,
         title: recipe.title,
         senderId: recipe.senderId,
         timestamp: recipe.timestamp,

@@ -46,7 +46,7 @@ export default function CommentsSection({ recipe }: { recipe: IRecipe }) {
         };
 
         fetchCommentsData();
-    }, [recipeData]); // ✅ Fetch data whenever recipeData updates
+    }, [recipeData]);
 
     if (loading) {
         return <div className="flex flex-col items-center justify-center m-10">

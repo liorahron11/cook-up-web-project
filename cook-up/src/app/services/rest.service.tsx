@@ -3,6 +3,8 @@ import {IUser} from "@/app/models/user.interface";
 import {getUserFromLocalStorage, LocalStorageUser} from "@/app/services/local-storage.service";
 import {CredentialResponse} from "@react-oauth/google";
 import {IComment} from "@server/interfaces/comment.interface";
+import {extractRecipeImage} from "@/app/services/images.service";
+import {IRecipe} from "@server/interfaces/recipe.interface";
 const user: LocalStorageUser = getUserFromLocalStorage();
 
 const baseURL:string = 'http://localhost:5000';
@@ -71,8 +73,8 @@ export const getRecipes = async (page = 1, limit = 10) => {
       });
 
       const recipes = response.data.recipes || [];
-      recipes.forEach(recipe => {
-        if (recipe?.image) {
+      recipes.forEach((recipe: IRecipe) => {
+        if (recipe?.image && !recipe.isAI) {
           recipe.image = baseURL + "/uploads/" + extractRecipeImage(recipe.image);
         }
       });
@@ -92,15 +94,14 @@ export const getRecipes = async (page = 1, limit = 10) => {
     }
   };
 
-  // Helper function to get the next page of recipes
-  export const getNextRecipesPage = async (currentPage, limit = 10) => {
+  export const getNextRecipesPage = async (currentPage: number, limit = 10) => {
     return getRecipes(currentPage + 1, limit);
   };
 
 export const getUserRecipes = async (userId: string) => {
     try {
         const response = await apiClient.get(`/recipes?sender=${userId}`, {headers: authHeaders});
-        response.data.forEach(recipe => {
+        response.data.forEach((recipe: IRecipe) => {
             if(recipe?.image) {
               recipe.image = baseURL + "/uploads/" + extractRecipeImage(recipe.image);
             }
