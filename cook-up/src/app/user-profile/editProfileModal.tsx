@@ -7,15 +7,12 @@ import { FileUpload } from "primereact/fileupload";
 import { Toast } from "primereact/toast";
 import { useRef } from "react";
 import { updateUserProfile } from "@/app/services/rest.service";
+import {IUser} from "@/app/models/user.interface";
 
 interface EditProfileModalProps {
   isVisible: boolean;
   onHide: () => void;
-  user: {
-    id: string;
-    username: string;
-    profilePictureUrl?: string;
-  };
+  user: Partial<IUser>;
   onProfileUpdated: () => void;
 }
 
@@ -45,14 +42,14 @@ export default function EditProfileModal({ isVisible, onHide, user, onProfileUpd
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('userId', user.id);
-      formData.append("username", username);
+      formData.append('userId', user.id as string);
+      formData.append("username", username as string);
 
       if (profileImage) {
         formData.append("profilePicture", profileImage);
       }
            
-      const result = await updateUserProfile(user.id, formData);
+      const result = await updateUserProfile(user.id as string, formData);
       console.log("Profile update result:", result);
       
       toast.current?.show({ 

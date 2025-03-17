@@ -2,6 +2,7 @@ import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {IUser} from "@/app/models/user.interface";
 import {getUserFromLocalStorage, LocalStorageUser} from "@/app/services/local-storage.service";
 import {CredentialResponse} from "@react-oauth/google";
+import {IComment} from "@server/interfaces/comment.interface";
 const user: LocalStorageUser = getUserFromLocalStorage();
 
 const apiClient: AxiosInstance = axios.create({
@@ -75,6 +76,16 @@ export const getUserRecipes = async (userId: string) => {
     }
 };
 
+export const getRecipeById = async (recipeId: string) => {
+    try {
+        const response = await apiClient.get(`/recipes/${recipeId}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching recipe:', error);
+        throw error;
+    }
+};
+
 export const createRecipe = async (data: any) => {
     try {
         const response = await apiClient.post('/recipes', data, {headers: {Authorization: `Bearer ${user.accessToken}`}});
@@ -84,3 +95,18 @@ export const createRecipe = async (data: any) => {
         throw error;
     }
 };
+
+export const postCommentOnPost = (recipeId: string, content: string) => {
+    try {
+        const commentToPost: IComment = {
+            content: content,
+            senderId: user.id,
+            comments: [],
+            timestamp: new Date(),
+        }
+        return apiClient.post(`/comments/${recipeId}`, {comment: commentToPost}, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+    } catch (error) {
+        console.error('Error posting comment:', error);
+        throw error;
+    }
+}

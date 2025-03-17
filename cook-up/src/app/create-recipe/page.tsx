@@ -139,7 +139,7 @@ export default function CreateRecipe() {
                     {((errors["title"] || errors["description"] || errors["ingredients"] || errors["instructions"]) &&
                         <span className="m-auto ml-1 text-red-500">
                                     {parseErrors(errors)}
-                                </span>)}
+                        </span>)}
                 </div>
 
             </form>

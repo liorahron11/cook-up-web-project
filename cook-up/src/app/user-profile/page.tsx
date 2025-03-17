@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import {getUserFromLocalStorage, LocalStorageUser,saveUserToLocalStorage} from "@/app/services/local-storage.service";
-import {getUserRecipes, updateUserProfile} from "@/app/services/rest.service";
+import {getUserRecipes} from "@/app/services/rest.service";
 import {useEffect, useState} from "react";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import PostsGrid, {PostsGridProps} from "@/app/components/posts-grid";
@@ -47,7 +47,7 @@ export default function UserProfile() {
         setUser(userAfterUpdate);
         const currentStoredUser = getUserFromLocalStorage();
         
-        const updatedLocalStorageUser: LocalStorageUser = {
+        const updatedLocalStorageUser: any = {
           ...userAfterUpdate,
           accessToken: currentStoredUser.accessToken
         };

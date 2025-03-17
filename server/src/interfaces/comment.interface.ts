@@ -4,5 +4,4 @@ export interface IComment {
     senderId: string;
     content: string;
     comments: IComment[];
-    likes: number;
 }

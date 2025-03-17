@@ -1,6 +1,6 @@
 import {IRecipe} from "../interfaces/recipe.interface";
 import {HydratedDocument, UpdateWriteOpResult} from "mongoose";
-import Recipe from "../models/recipe.model";
+import Recipe, {Comment} from "../models/recipe.model";
 import { IComment } from "../interfaces/comment.interface";
 import {isIdValid} from "../services/query-utils"
 
@@ -54,7 +54,7 @@ export const fetchRecipeById = async (id: string): Promise<HydratedDocument<IRec
 }
 
 export const fetchRecipesBySender = async (senderId: string): Promise<HydratedDocument<IRecipe>[]> => {
-    const recipes: HydratedDocument<IRecipe>[] = await Recipe.find({senderId})
+    const recipes: HydratedDocument<IRecipe>[] = await Recipe.find({senderId});
 
     if (!recipes) {
         console.error(`didnt find recipes for sender ${senderId}`);
@@ -94,17 +94,26 @@ export const getRecipeCommentsById = async (id: string): Promise<IComment[]> => 
 
 export const addCommentToRecipeId = async (id: string, comment: IComment): Promise<IComment[]> => {
     const recipe: HydratedDocument<IRecipe> = await fetchRecipeById(id);
+    const newComment = await Comment.create({
+        senderId: comment.senderId,
+        content: comment.content,
+        comments: []
+    });
 
     if (!recipe) {
         console.error(`didnt find recipe ${id}`);
     } else {
         console.log(`recipe ${id} found successfully`);
-    
-        const updatedRecipe = await Recipe.findOneAndUpdate(
-            { _id: id },   
-            { $push: { comments: comment } },  
-            { new: true }                      
+
+        const updatedRecipe = await Recipe.findByIdAndUpdate(
+            id,
+            { $push: { comments: newComment } },
+            { new: true }
         );
+
+        if (!updatedRecipe) {
+            throw new Error("Recipe not found");
+        }
 
         return updatedRecipe.comments;
     }

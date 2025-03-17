@@ -33,7 +33,8 @@ const getAllRecipes = async (req: Request, res: Response) => {
     const recipes: HydratedDocument<IRecipe>[] = await fetchAllRecipes();
 
     if (recipes) {
-        res.status(200).send(recipes);
+        const parsedRecipes = recipes.map((recipe) => parseRecipe(recipe));
+        res.status(200).send(parsedRecipes);
     } else {
         res.status(500).send();
     }
@@ -44,9 +45,8 @@ const getRecipeById = async (req: Request, res: Response) => {
 
     if (recipeId) {
         const recipe: HydratedDocument<IRecipe> = await fetchRecipeById(recipeId);
-
         if (recipe) {
-            res.status(200).send(recipe);
+            res.status(200).send(parseRecipe(recipe));
         } else {
             res.status(500).send('error finding recipe');
         }
@@ -62,7 +62,8 @@ const getRecipesBySenderId = async (req: Request, res: Response) => {
         const recipes: HydratedDocument<IRecipe>[] = await fetchRecipesBySender(senderId);
 
         if (recipes) {
-            res.status(200).send(recipes);
+            const parsedRecipes = recipes.map((recipe) => parseRecipe(recipe));
+            res.status(200).send(parsedRecipes);
         } else {
             res.status(500).send('error finding recipes');
         }
@@ -87,6 +88,28 @@ const updateRecipe = async (req: Request, res: Response) => {
         res.status(500).send('recipe ID not exist');
     }
 };
+
+const parseRecipe = (recipe) => {
+    return {
+        id: recipe._id,
+        title: recipe.title,
+        senderId: recipe.senderId,
+        timestamp: recipe.timestamp,
+        description: recipe.description,
+        ingredients: recipe.ingredients,
+        instructions: recipe.instructions,
+        comments: recipe.comments.map((comment) => {
+            return {
+                id: comment._id,
+                timestamp: comment.timestamp,
+                senderId: comment.senderId,
+                content: comment.content,
+                comments: comment.comments
+            }
+        }),
+        image: recipe.image
+    };
+}
 
 export default {
     addRecipe,

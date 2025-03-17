@@ -1,6 +1,6 @@
 import React from "react";
 import {IComment} from "@server/interfaces/comment.interface";
-import CommentHeader from "@/app/components/comment-header";
+import CommentHeader from "@/app/components/comments/comment-header";
 import {IUser} from "@/app/models/user.interface";
 import Divider from "@/app/login/divider";
 
@@ -21,8 +21,8 @@ export default function Comment({ comment, user }: { comment: IComment, user: IU
                             השב
                         </button>
                     </div>
-                    {comment.comments.map((comment: IComment) => (<div key={comment.id} className="mr-2">
-                        <Comment comment={comment} user={user}></Comment><Divider label=""></Divider>
+                    {comment?.comments?.map((comment: IComment) => (<div key={comment.id} className="mr-2">
+                        <Comment key={comment.id} comment={comment} user={user}></Comment><Divider label=""></Divider>
                     </div>))}
     </article>);
 }

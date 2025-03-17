@@ -2,15 +2,18 @@ import React from "react";
 import {IUser} from "@/app/models/user.interface";
 import moment from "moment/moment";
 import Link from "next/link";
+import {extractProfilePicture} from "@/app/services/images.service";
 
 export default function CommentHeader({ user, timestamp }: { user: IUser, timestamp: Date }) {
+    const profileImage: string = extractProfilePicture(user?.profilePictureUrl as string) as string;
+
     return (<footer className="flex justify-between items-center mb-2">
         <div className="flex items-center">
-            <Link href="/user-profile/[userId]" as={`/user-profile/${user.id}`}>
+            <Link href="/user-profile/[userId]" as={`/user-profile/${user.id}`} className="flex justify-center">
                 <p className="inline-flex items-center ml-3 text-sm text-gray-900 dark:text-white font-semibold">
                     <img
                         className="ml-2 w-6 h-6 rounded-full"
-                        src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
+                        src={`http://localhost:5000/uploads/${profileImage}`}
                         alt={user.username}/>{user.username}</p>
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-400">
