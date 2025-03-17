@@ -6,8 +6,6 @@ import {IUser} from "@/app/models/user.interface";
 import { Tooltip } from 'primereact/tooltip';
 import Link from "next/link";
 import {Dialog} from "primereact/dialog";
-import {IIngredient} from "@server/interfaces/ingredients.interface";
-import {EIngredientUnit} from "@/app/enums/ingredient-unit.enum";
 import PostDetails from "@/app/components/post-details";
 moment.locale('he');
 
@@ -31,8 +29,8 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
         userSection = (<div className="px-6 mt-4">
             <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block">
                <Link className="flex flex-row gap-2" href="/user-profile/[userId]" as={`/user-profile/${user.id}`}>
-                   {user?.username}
-                   {user?.username === 'CookUp - AI' ? aiLogo : null}
+                   {recipe?.isAI ? 'CookUp - AI' : user?.username}
+                   {recipe?.isAI ? aiLogo : null}
                </Link>
             </span>
             </div>)

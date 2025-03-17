@@ -7,6 +7,7 @@ import Comment from "@/app/components/comments/comment";
 import AddComment from "@/app/components/comments/add-comment";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import {getRecipeById} from "@/app/services/rest.service";
+import Divider from "@/app/login/divider";
 
 export default function CommentsSection({ recipe }: { recipe: IRecipe }) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -56,14 +57,16 @@ export default function CommentsSection({ recipe }: { recipe: IRecipe }) {
     return (
         <section>
             <div className="max-w-2xl px-4">
-                <AddComment reloadEvent={reloadData} recipe={recipeData} /> {/* ✅ Use updated state */}
+                <AddComment reloadEvent={reloadData} recipe={recipeData} />
                 {recipeData.comments.map((comment: IComment) => (
-                    <Comment
-                        comment={comment}
-                        user={users.find((user: IUser) => user.id === comment.senderId) as IUser}
-                        key={comment.id}
-                    />
-                ))}
+                    <div key={comment.id}>
+                        <Comment
+                            comment={comment}
+                            user={users.find((user: IUser) => user.id === comment.senderId) as IUser}
+                            key={comment.id}
+                        />
+                        <Divider label=""></Divider>
+                    </div>))}
             </div>
         </section>
     );

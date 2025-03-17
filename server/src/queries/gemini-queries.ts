@@ -2,6 +2,7 @@ import {GenerateContentResult, GenerativeModel, GoogleGenerativeAI} from "@googl
 import {IRecipe} from "../interfaces/recipe.interface";
 import NodeCache from "node-cache";
 import {getRecipeImage} from "./unsplash-queries";
+import {addNewRecipe} from "./recipe-queries";
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 export const generateRecipes = async (): Promise<IRecipe[]> => {
@@ -23,6 +24,10 @@ export const generateRecipes = async (): Promise<IRecipe[]> => {
             let recipes: IRecipe[] = JSON.parse(jsonString);
             recipes = await attachExtraInfo(recipes);
 
+            for (const recipe of recipes) {
+                recipe.isAI = true;
+                await addNewRecipe(recipe);
+            }
             cacheGeminiResponse(`recipes`, recipes);
 
             return recipes;

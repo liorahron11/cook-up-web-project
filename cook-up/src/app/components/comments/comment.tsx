@@ -21,8 +21,10 @@ export default function Comment({ comment, user }: { comment: IComment, user: IU
                             השב
                         </button>
                     </div>
-                    {comment?.comments?.map((comment: IComment) => (<div key={comment.id} className="mr-2">
-                        <Comment key={comment.id} comment={comment} user={user}></Comment><Divider label=""></Divider>
-                    </div>))}
+                    {comment?.comments?.map((comment: IComment) =>
+                        (<div key={comment.id} className="mr-2">
+                            <Comment key={comment.id} comment={comment} user={user}></Comment>
+                            <Divider label=""></Divider>
+                        </div>))}
     </article>);
 }
