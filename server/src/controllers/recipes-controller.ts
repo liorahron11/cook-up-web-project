@@ -12,9 +12,12 @@ import {
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
-    const recipe: IRecipe = req.body.recipe;
+    const recipe: IRecipe = JSON.parse(req.body.recipe);
 
     if (recipe) {
+        if((req as any).file) {
+            recipe.image = (req as any).file.path;
+        }
         const recipeId: string = await addNewRecipe(recipe);
         if (recipeId != "0") {
             res.status(201).send({
@@ -30,15 +33,32 @@ const addRecipe = async (req: Request, res: Response) => {
 };
 
 const getAllRecipes = async (req: Request, res: Response) => {
-    const recipes: HydratedDocument<IRecipe>[] = await fetchAllRecipes();
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const skip = (page - 1) * limit;
 
-    if (recipes) {
-        const parsedRecipes = recipes.map((recipe) => parseRecipe(recipe));
-        res.status(200).send(parsedRecipes);
-    } else {
-        res.status(500).send();
+      const { recipes, total } = await fetchAllRecipes(skip, limit);
+
+      if (recipes) {
+          const parsedRecipes = recipes.map((recipe) => parseRecipe(recipe));
+          res.status(200).send({
+              parsedRecipes,
+              pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+              }
+        });
+      } else {
+        res.status(500).send({ error: "Failed to retrieve recipes" });
+      }
+    } catch (error) {
+      console.error("Error in getAllRecipes:", error);
+      res.status(500).send({ error: "Internal server error" });
     }
-};
+  };
 
 const getRecipeById = async (req: Request, res: Response) => {
     const recipeId: string = String(req.params.id);

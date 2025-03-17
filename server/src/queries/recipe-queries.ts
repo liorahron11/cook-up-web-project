@@ -26,17 +26,26 @@ export const addNewRecipe = async (recipe: IRecipe): Promise<string> => {
     
 }
 
-export const fetchAllRecipes = async (): Promise<HydratedDocument<IRecipe>[]> => {
-    const recipes: HydratedDocument<IRecipe>[] = await Recipe.find();
-
-    if (!recipes) {
-        console.error(`could not find recipes}`);
-    } else {
-        console.log(`recipes found successfully`);
-
-        return recipes;
+export const fetchAllRecipes = async (skip = 0, limit = 10): Promise<{ recipes: HydratedDocument<IRecipe>[], total: number }> => {
+    try {
+      const recipes: HydratedDocument<IRecipe>[] = await Recipe.find()
+        .skip(skip)
+        .limit(limit);
+      
+      const total = await Recipe.countDocuments();
+      
+      if (!recipes) {
+        console.error("Could not find recipes");
+        return { recipes: [], total: 0 };
+      } else {
+        console.log(`Recipes found successfully. Page: ${skip/limit + 1}, Count: ${recipes.length}, Total: ${total}`);
+        return { recipes, total };
+      }
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+      return { recipes: [], total: 0 };
     }
-}
+  };
 
 export const fetchRecipeById = async (id: string): Promise<HydratedDocument<IRecipe>> => {
     let recipe: HydratedDocument<IRecipe>;

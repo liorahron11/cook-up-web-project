@@ -85,18 +85,19 @@ export default function EditProfileModal({ isVisible, onHide, user, onProfileUpd
         onHide={onHide}
         style={{ width: '450px', direction: 'rtl' }}
         footer={
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3 pt-2">
             <Button 
               label="ביטול" 
-              icon="pi pi-times" 
               onClick={onHide} 
-              className="p-button-text" 
+              className="p-button-outlined p-button-rounded p-button-secondary" 
+              style={{ minWidth: '100px' }}
             />
             <Button 
               label="שמור" 
-              icon="pi pi-check" 
               onClick={handleSubmit} 
               loading={loading} 
+              className="p-button-rounded p-button-success"
+              style={{ minWidth: '100px' }}
             />
           </div>
         }
