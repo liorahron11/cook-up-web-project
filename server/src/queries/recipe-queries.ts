@@ -88,6 +88,42 @@ export const updateRecipeDetails = async (id: string, title: string): Promise<bo
     }
 }
 
+export const saveLikeRecipe = async (userId: string, recipeId: string): Promise<boolean> => {
+    const result: UpdateWriteOpResult = await Recipe.findByIdAndUpdate(
+        { _id: recipeId },   
+        { $push: { likes: userId } },
+        { new: true }
+      );
+
+    if (result) {
+        console.log(`userId ${userId} like recipeId ${recipeId} successfully`);
+
+        return true;
+    } else {
+        console.log('recipe not found or content up to date');
+
+        return false;
+    }
+}
+
+export const saveDislikeRecipe = async (userId: string, recipeId: string): Promise<boolean> => {
+    const result: UpdateWriteOpResult = await Recipe.findByIdAndUpdate(
+        {_id: recipeId},
+        {$pull: { likes: userId }},
+        { new: true }
+      );
+
+    if (result) {
+        console.log(`userId ${userId} dislike recipeId ${recipeId} successfully`);
+
+        return true;
+    } else {
+        console.log('recipe not found or content up to date');
+
+        return false;
+    }
+}
+
 
 export const getRecipeCommentsById = async (id: string): Promise<IComment[]> => {
     const recipe: HydratedDocument<IRecipe> = await fetchRecipeById(id);

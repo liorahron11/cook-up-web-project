@@ -10,5 +10,6 @@ export interface IRecipe {
     ingredients: IIngredient[];
     instructions: string;
     comments: IComment[];
+    likes: string[];
     image?: string;
 }

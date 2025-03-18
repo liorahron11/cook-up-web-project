@@ -7,7 +7,9 @@ import {
     fetchAllRecipes,
     fetchRecipeById,
     fetchRecipesBySender,
-    updateRecipeDetails
+    updateRecipeDetails,
+    saveLikeRecipe,
+    saveDislikeRecipe
 } from "../queries/recipe-queries";
 const recipesRoutes: Router = express.Router();
 
@@ -108,10 +110,46 @@ const updateRecipe = async (req: Request, res: Response) => {
     }
 };
 
+const likeRecipe = async (req: Request, res: Response) => {
+    const userId: string = req.body.userId;
+    const recipeId: string = req.body.recipeId;
+
+    if (userId && recipeId) {
+        const isRecipeUpdated: boolean = await saveLikeRecipe(userId, recipeId);
+
+        if (isRecipeUpdated) {
+            res.status(200).send('recipe liked successfully');
+        } else {
+            res.status(500).send('error like the recipe');
+        }
+    } else {
+        res.status(500).send('recipe ID or user ID not exist');
+    }
+};
+
+const dislikeRecipe = async (req: Request, res: Response) => {
+    const userId: string = req.body.userId;
+    const recipeId: string = req.body.recipeId;
+
+    if (userId && recipeId) {
+        const isRecipeUpdated: boolean = await saveDislikeRecipe(userId, recipeId);
+
+        if (isRecipeUpdated) {
+            res.status(200).send('recipe disliked successfully');
+        } else {
+            res.status(500).send('error disliked the recipe');
+        }
+    } else {
+        res.status(500).send('recipe ID or user ID not exist');
+    }
+};
+
 export default {
     addRecipe,
     getAllRecipes,
     getRecipeById,
     getRecipesBySenderId,
-    updateRecipe
+    updateRecipe,
+    likeRecipe,
+    dislikeRecipe
 };
