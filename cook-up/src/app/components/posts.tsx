@@ -61,20 +61,22 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     if (recipe) {
         return (
             <div className=" w-1/3">
-            <div className="rounded overflow-hidden shadow-lg flex flex-col" onClick={() => setIsVisible(true)}>
-                <div className="relative h-auto">
-                    <img
-                         src={recipe.image}
-                         alt="recipe image"/>
-                </div>
-                {userSection}
-                <div className="px-6 py-4 mb-auto">
+            <div className="rounded overflow-hidden shadow-lg flex flex-col">
+                <div onClick={() => setIsVisible(true)}>
+                    <div className="relative h-auto">
+                        <img
+                            src={recipe.image}
+                            alt="recipe image"/>
+                    </div>
+                    {userSection}
+                    <div className="px-6 py-4 mb-auto">
                     <span
-                       className="font-medium text-lg inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2">
+                        className="font-medium text-lg inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2">
                         {recipe.title}</span>
-                    <p className="text-gray-500 text-sm">
-                        {recipe.description}
-                    </p>
+                        <p className="text-gray-500 text-sm">
+                            {recipe.description}
+                        </p>
+                    </div>
                 </div>
                 <div className="px-6 py-3 flex flex-row items-center justify-between bg-gray-100">
                     <div className="flex flex-row items-center">
