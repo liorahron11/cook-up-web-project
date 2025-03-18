@@ -7,19 +7,30 @@ import { Tooltip } from 'primereact/tooltip';
 import Link from "next/link";
 import {Dialog} from "primereact/dialog";
 import PostDetails from "@/app/components/post-details";
+import PostOptionsButton from "@/app/post-options-button";
+import EditPost from "@/app/components/edit-post";
 moment.locale('he');
 
 export interface RecipePostProps {
     recipe: IRecipe | null;
-    user?: IUser | null;
+    user?: IUser;
+    onUpdate?: () => void
 }
 
 export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [isEditMode, setIsEditMode] = useState<boolean>(false);
     const recipe: IRecipe | null = postProps.recipe;
     const user: IUser | null | undefined = postProps.user;
     let userSection: ReactElement | null = null;
-    const headerContent: ReactElement = (<div className=""><h2>{user?.username}</h2></div>);
+    const onDialogHide = () => {
+        if (!isVisible) return;
+        setIsVisible(false);
+        setTimeout(() => setIsEditMode(false), 100);
+    }
+    const dialogHeaderElement: ReactElement = !user ? (
+        <PostOptionsButton editCallback={() => setIsEditMode(true)}></PostOptionsButton>
+    ) : <div className=""><h2>{user?.username}</h2></div>;
 
     const aiLogo: ReactElement = (<div className="flex flex-row items-center justify-center">
         <Tooltip target=".gemini-logo" position="mouse" />
@@ -38,7 +49,7 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
 
     if (recipe) {
         return (
-            <div className=" w-1/3">
+            <div className="w-[30vw]">
             <div className="rounded overflow-hidden shadow-lg flex flex-col" onClick={() => setIsVisible(true)}>
                 <div className="relative h-auto">
                     <img
@@ -81,8 +92,8 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
                 </span>
                 </div>
             </div>
-                <Dialog draggable={false} header={headerContent} visible={isVisible} style={{ width: '50vw' }} onHide={() => {if (!isVisible) return; setIsVisible(false); }}>
-                    <PostDetails recipe={recipe}></PostDetails>
+                <Dialog onHide={onDialogHide} draggable={false} header={dialogHeaderElement} visible={isVisible} style={{ width: '50vw' }}>
+                    {isEditMode ? <EditPost recipe={recipe} onUpdate={postProps.onUpdate} closeEditMode={() => setIsEditMode(false)}></EditPost> : <PostDetails recipe={recipe}></PostDetails>}
                 </Dialog>
             </div>
                 );

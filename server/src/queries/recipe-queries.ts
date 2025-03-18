@@ -74,8 +74,8 @@ export const fetchRecipesBySender = async (senderId: string): Promise<HydratedDo
     }
 }
 
-export const updateRecipeDetails = async (id: string, title: string): Promise<boolean> => {
-    const result: UpdateWriteOpResult = await Recipe.updateOne({_id: id}, { $set: {title: title}});
+export const updateRecipeDetails = async (id: string, updatedRecipe: IRecipe): Promise<boolean> => {
+    const result: UpdateWriteOpResult = await Recipe.updateOne({_id: id}, { $set: {...updatedRecipe}});
 
     if (result.modifiedCount > 0) {
         console.log(`recipe ${id} content updated successfully`);

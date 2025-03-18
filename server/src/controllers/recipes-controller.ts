@@ -10,8 +10,6 @@ import {
     updateRecipeDetails
 } from "../queries/recipe-queries";
 import {generateRecipes} from "../queries/gemini-queries";
-import {IComment} from "../interfaces/comment.interface";
-import comments from "../routes/comments";
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
@@ -101,10 +99,16 @@ const getRecipesBySenderId = async (req: Request, res: Response) => {
 
 const updateRecipe = async (req: Request, res: Response) => {
     const recipeId: string = req.params.id;
-    const newTitle: string = req.body.title;
+    let updatedRecipe: IRecipe = JSON.parse(req.body.recipe);
 
-    if (recipeId) {
-        const isRecipeUpdated: boolean = await updateRecipeDetails(recipeId ,newTitle);
+    if (recipeId && updatedRecipe) {
+        if((req as any).file) {
+            updatedRecipe.image = (req as any).file.path;
+        } else {
+            updatedRecipe.image = '';
+        }
+
+        const isRecipeUpdated: boolean = await updateRecipeDetails(recipeId, updatedRecipe);
 
         if (isRecipeUpdated) {
             res.status(200).send('recipe updated successfully');

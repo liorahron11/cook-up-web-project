@@ -19,37 +19,37 @@ export default function UserProfile() {
     const [recipes, setRecipes] = useState<IRecipe[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [user, setUser] = useState<IUser | null>(null);
+    const fetchUserData = async () => {
+        setLoading(true);
+        try {
+            let userData;
+            if (userId) {
+                userData = await getUserByID(userId as string);
+            } else {
+                userData = getUserFromLocalStorage();
+            }
+            setUser(userData);
+
+            const userPosts: IRecipe[] = await getUserRecipes(userId as string);
+            setRecipes(userPosts);
+            setLoading(false);
+
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            setLoading(true);
-            try {
-                let userData;
-                if (userId) {
-                    userData = await getUserByID(userId as string);
-                } else {
-                    userData = getUserFromLocalStorage();
-                }
-                setUser(userData);
-
-                const userPosts: IRecipe[] = await getUserRecipes(userId as string);
-                setRecipes(userPosts);
-                setLoading(false);
-
-            } catch (error) {
-                console.error("Error fetching user profile:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         if (userId !== undefined) {
             fetchUserData();
         }
     }, [userId]);
 
     const postGridProps: PostsGridProps = {
-        posts: recipes
+        posts: recipes,
+        onUpdate: fetchUserData
     }
 
     const userUpdateButton: ReactElement = (<button

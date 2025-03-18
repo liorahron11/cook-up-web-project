@@ -201,7 +201,7 @@ recipesRoutes.get("/", authMiddleware,recipesController.getRecipesBySenderId);
  *           description: Error updating recipe
  */
 
-recipesRoutes.put("/:id", authMiddleware, recipesController.updateRecipe);
+recipesRoutes.put("/:id", authMiddleware, upload.single('photo'), recipesController.updateRecipe);
 
 export default recipesRoutes;
 
