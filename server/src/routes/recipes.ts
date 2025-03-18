@@ -228,6 +228,69 @@ recipesRoutes.put("/:id", authMiddleware, upload.single('photo'), recipesControl
  */
 recipesRoutes.delete("/:id", authMiddleware, recipesController.removeRecipe);
 
+
+/**
+ * @swagger
+ * paths:
+ *   /recipes/like:
+ *     put:
+ *       summary: Update like of recipe
+ *       description: Update the user id in recipes likes array.
+ *       tags:
+ *         - recipes
+ *       security:
+ *         - bearerAuth: []
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                   description: The user id that set like on recipe
+ *                 recipeId:
+ *                   type: string
+ *                   description: The recipe id that the user like 
+ *       responses:
+ *         200:
+ *           description: recipe updated successfully
+ *         500:
+ *           description: Error updating recipe
+ */
+
+recipesRoutes.post("/like", authMiddleware, recipesController.likeRecipe);
+/**
+ * @swagger
+ * paths:
+ *   /recipes/like:
+ *     put:
+ *       summary: Update dislike of recipe
+ *       description: Update the user id in recipes likes array.
+ *       tags:
+ *         - recipes
+ *       security:
+ *         - bearerAuth: []
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                   description: The user id that set dislike on recipe
+ *                 recipeId:
+ *                   type: string
+ *                   description: The recipe id that the user dislike 
+ *       responses:
+ *         200:
+ *           description: recipe updated successfully
+ *         500:
+ *           description: Error updating recipe
+ */
+
+recipesRoutes.post("/dislike", authMiddleware, recipesController.dislikeRecipe);
 export default recipesRoutes;
-
-
