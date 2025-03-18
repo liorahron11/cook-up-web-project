@@ -63,9 +63,9 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     const handleLikeClick = async () => {
         let isOperationSuccess: boolean;
         if(liked) {
-            isOperationSuccess = await handleDislike(loggedUser.id, recipe?._id as string);
+            isOperationSuccess = await handleDislike(loggedUser.id, recipe?.id as string);
         } else {
-            isOperationSuccess = await handleLike(loggedUser.id, recipe?._id as string);
+            isOperationSuccess = await handleLike(loggedUser.id, recipe?.id as string);
         }
 
        if(isOperationSuccess) {

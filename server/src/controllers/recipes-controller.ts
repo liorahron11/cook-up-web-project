@@ -202,7 +202,6 @@ export default {
     getAllRecipes,
     getRecipeById,
     getRecipesBySenderId,
-    updateRecipe,
     likeRecipe,
     dislikeRecipe,
     updateRecipe,

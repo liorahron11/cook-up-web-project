@@ -6,11 +6,11 @@ const recipesRoutes: Router = express.Router();
 
 
 /**
-* @swagger
-* tags:
-*   name: Recipes
-*   description: The Recipes API
-*/
+ * @swagger
+ * tags:
+ *   name: Recipes
+ *   description: The Recipes API
+ */
 
 /**
  * @swagger
@@ -252,7 +252,7 @@ recipesRoutes.delete("/:id", authMiddleware, recipesController.removeRecipe);
  *                   description: The user id that set like on recipe
  *                 recipeId:
  *                   type: string
- *                   description: The recipe id that the user like 
+ *                   description: The recipe id that the user like
  *       responses:
  *         200:
  *           description: recipe updated successfully
@@ -284,7 +284,7 @@ recipesRoutes.post("/like", authMiddleware, recipesController.likeRecipe);
  *                   description: The user id that set dislike on recipe
  *                 recipeId:
  *                   type: string
- *                   description: The recipe id that the user dislike 
+ *                   description: The recipe id that the user dislike
  *       responses:
  *         200:
  *           description: recipe updated successfully
@@ -293,4 +293,5 @@ recipesRoutes.post("/like", authMiddleware, recipesController.likeRecipe);
  */
 
 recipesRoutes.post("/dislike", authMiddleware, recipesController.dislikeRecipe);
+
 export default recipesRoutes;
