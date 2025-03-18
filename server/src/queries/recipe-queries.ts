@@ -74,6 +74,19 @@ export const fetchRecipesBySender = async (senderId: string): Promise<HydratedDo
     }
 }
 
+export const deleteRecipeById = async (id: string): Promise<boolean> => {
+    const result = await Recipe.deleteOne({_id: id});
+    if (result.deletedCount > 0) {
+        console.log(`recipe ${id} deleted successfully`);
+
+        return true;
+    } else {
+        console.error(`recipe ${id} not found`);
+
+        return false;
+    }
+}
+
 export const updateRecipeDetails = async (id: string, updatedRecipe: IRecipe): Promise<boolean> => {
     const result: UpdateWriteOpResult = await Recipe.updateOne({_id: id}, { $set: {...updatedRecipe}});
 

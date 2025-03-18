@@ -3,7 +3,7 @@ import {Button} from "primereact/button";
 import {Menu} from "primereact/menu";
 
 
-export default function PostOptionsButton({editCallback}: {editCallback: () => void}) {
+export default function PostOptionsButton({editCallback, removeCallback}: {editCallback: () => void, removeCallback: () => void}) {
     const optionsMenu: RefObject<any> = useRef(null);
     const items = [
         {
@@ -12,7 +12,12 @@ export default function PostOptionsButton({editCallback}: {editCallback: () => v
                     label: 'עריכה',
                     icon: 'pi pi-pencil',
                     command: editCallback
-                }
+                },
+                {
+                    label: 'מחיקה',
+                    icon: 'pi pi-trash',
+                    command: removeCallback
+                },
             ]
         }
     ];

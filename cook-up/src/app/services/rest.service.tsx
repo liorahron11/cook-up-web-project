@@ -165,3 +165,13 @@ export const updateRecipe = async (recipeId: string, data: FormData) => {
         throw error;
     }
 }
+
+export const removeRecipe = async (recipeId: string) => {
+    try {
+        const response = await apiClient.delete(`/recipes/${recipeId}`,  {headers: {'Authorization': `Bearer ${user.accessToken}`}});
+        return response.data;
+    } catch (error: any) {
+        console.error('Error updating recipe:', error.response.data);
+        throw error;
+    }
+}

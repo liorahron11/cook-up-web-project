@@ -200,8 +200,33 @@ recipesRoutes.get("/", authMiddleware,recipesController.getRecipesBySenderId);
  *         500:
  *           description: Error updating recipe
  */
-
 recipesRoutes.put("/:id", authMiddleware, upload.single('photo'), recipesController.updateRecipe);
+
+/**
+ * @swagger
+ * paths:
+ *   /recipes/{id}:
+ *     delete:
+ *       summary: Remove a recipe
+ *       description: Remove a recipe by its ID.
+ *       tags:
+ *         - recipes
+ *       security:
+ *         - bearerAuth: []
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
+ *           description: The ID of the recipe to remove
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Recipe removed successfully
+ *         500:
+ *           description: Error removing recipe
+ */
+recipesRoutes.delete("/:id", authMiddleware, recipesController.removeRecipe);
 
 export default recipesRoutes;
 

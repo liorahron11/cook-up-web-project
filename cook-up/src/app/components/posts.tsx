@@ -7,8 +7,9 @@ import { Tooltip } from 'primereact/tooltip';
 import Link from "next/link";
 import {Dialog} from "primereact/dialog";
 import PostDetails from "@/app/components/post-details";
-import PostOptionsButton from "@/app/post-options-button";
+import PostOptionsButton from "@/app/components/post-options-button";
 import EditPost from "@/app/components/edit-post";
+import {removeRecipe} from "@/app/services/rest.service";
 moment.locale('he');
 
 export interface RecipePostProps {
@@ -28,8 +29,13 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
         setIsVisible(false);
         setTimeout(() => setIsEditMode(false), 100);
     }
+    const onRemovePost = async () => {
+        await removeRecipe(recipe?.id as string);
+
+        if (postProps.onUpdate) postProps.onUpdate()
+    }
     const dialogHeaderElement: ReactElement = !user ? (
-        <PostOptionsButton editCallback={() => setIsEditMode(true)}></PostOptionsButton>
+        <PostOptionsButton removeCallback={onRemovePost} editCallback={() => setIsEditMode(true)}></PostOptionsButton>
     ) : <div className=""><h2>{user?.username}</h2></div>;
 
     const aiLogo: ReactElement = (<div className="flex flex-row items-center justify-center">

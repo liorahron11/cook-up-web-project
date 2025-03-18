@@ -3,7 +3,7 @@ import {HydratedDocument} from "mongoose";
 import {IRecipe} from "../interfaces/recipe.interface";
 import { Request, Response } from 'express';
 import {
-    addNewRecipe,
+    addNewRecipe, deleteRecipeById,
     fetchAllRecipes,
     fetchRecipeById,
     fetchRecipesBySender,
@@ -120,6 +120,22 @@ const updateRecipe = async (req: Request, res: Response) => {
     }
 };
 
+const removeRecipe = async (req: Request, res: Response) => {
+    const recipeId: string = req.params.id;
+
+    if (recipeId) {
+        const isRecipeRemoved: boolean = await deleteRecipeById(recipeId);
+
+        if (isRecipeRemoved) {
+            res.status(200).send('recipe removed successfully');
+        } else {
+            res.status(500).send('error removing the recipe');
+        }
+    } else {
+        res.status(500).send('recipe ID not exist');
+    }
+}
+
 const parseRecipe = (recipe) => {
     return {
         id: recipe._id,
@@ -150,5 +166,6 @@ export default {
     getAllRecipes,
     getRecipeById,
     getRecipesBySenderId,
-    updateRecipe
+    updateRecipe,
+    removeRecipe
 };
