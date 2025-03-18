@@ -45,6 +45,36 @@ export const updateUserProfile = async (userId: string, data: FormData) => {
     }
 }
 
+export const handleLike = async (userId: string, recipeId: string) => {
+    const data = {
+        "userId": userId,
+        "recipeId": recipeId
+    }
+
+    try {
+        const response = await apiClient.post(`/recipes/like`, data,  {headers: authHeaders});
+        return (response.status == 200);
+    } catch (error: any) {
+        console.error('Error save user like on recipe post', error.response.data);
+        throw error;
+    }
+}
+
+export const handleDislike = async (userId: string, recipeId: string) => {
+    const data = {
+        "userId": userId,
+        "recipeId": recipeId
+    }
+
+    try {
+        const response = await apiClient.post(`/recipes/dislike`, data,  {headers: authHeaders});
+        return (response.status == 200);
+    } catch (error: any) {
+        console.error('Error save user dislike on recipe post', error.response.data);
+        throw error;
+    }
+}
+
 export const googleSignin = async (credentialResponse: CredentialResponse) => {
     try {
         const response = await apiClient.post('/auth/googleSignin', credentialResponse);
