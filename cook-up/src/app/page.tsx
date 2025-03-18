@@ -128,11 +128,12 @@ export default function Home() {
       {recipes.length > 0 ? (
         <>
           {recipes.map((recipe: IRecipe) => (
-            <RecipePost 
+            <RecipePost
               key={`${recipe.id}`}
               postProps={{
                 recipe, 
-                user: users.find((user: IUser) => user.id === recipe.senderId)
+                user: users.find((user: IUser) => user.id === recipe.senderId),
+                onUpdate: fetchInitialData
               }}
             />
           ))}

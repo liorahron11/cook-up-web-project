@@ -24,11 +24,7 @@ export default function GoogleLoginButton() {
             });
     }
 
-    const googleErrorMessage = () => {
-        console.log("error");
-    }
-
     return (
-        <GoogleLogin onSuccess={googleResponseMessage} onFailure={googleErrorMessage} />
+        <GoogleLogin onSuccess={googleResponseMessage} />
         );
 }

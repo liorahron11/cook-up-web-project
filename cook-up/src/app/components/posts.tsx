@@ -7,17 +7,22 @@ import { Tooltip } from 'primereact/tooltip';
 import Link from "next/link";
 import {Dialog} from "primereact/dialog";
 import PostDetails from "@/app/components/post-details";
+import PostOptionsButton from "@/app/components/post-options-button";
+import EditPost from "@/app/components/edit-post";
+import {removeRecipe} from "@/app/services/rest.service";
 import {getUserFromLocalStorage, LocalStorageUser} from "@/app/services/local-storage.service";
 import {handleLike, handleDislike} from "@/app/services/rest.service";
 moment.locale('he');
 
 export interface RecipePostProps {
     recipe: IRecipe | null;
-    user?: IUser | null;
+    user?: IUser;
+    onUpdate?: () => void
 }
 
 export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [isEditMode, setIsEditMode] = useState<boolean>(false);
     const loggedUser: LocalStorageUser = getUserFromLocalStorage();
     const recipe: IRecipe | null = postProps.recipe;
     const user: IUser | null | undefined = postProps.user;
@@ -25,7 +30,19 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     const [likeCount, setLikeCount] = useState<number>(recipe?.likes?.length || 0);
 
     let userSection: ReactElement | null = null;
-    const headerContent: ReactElement = (<div className=""><h2>{user?.username}</h2></div>);
+    const onDialogHide = () => {
+        if (!isVisible) return;
+        setIsVisible(false);
+        setTimeout(() => setIsEditMode(false), 100);
+    }
+    const onRemovePost = async () => {
+        await removeRecipe(recipe?.id as string);
+
+        if (postProps.onUpdate) postProps.onUpdate()
+    }
+    const dialogHeaderElement: ReactElement = !user ? (
+        <PostOptionsButton removeCallback={onRemovePost} editCallback={() => setIsEditMode(true)}></PostOptionsButton>
+    ) : <div className=""><h2>{user?.username}</h2></div>;
 
     const aiLogo: ReactElement = (<div className="flex flex-row items-center justify-center">
         <Tooltip target=".gemini-logo" position="mouse" />
@@ -46,9 +63,9 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
     const handleLikeClick = async () => {
         let isOperationSuccess: boolean;
         if(liked) {
-            isOperationSuccess = await handleDislike(loggedUser.id, recipe?._id as string);
+            isOperationSuccess = await handleDislike(loggedUser.id, recipe?.id as string);
         } else {
-            isOperationSuccess = await handleLike(loggedUser.id, recipe?._id as string);
+            isOperationSuccess = await handleLike(loggedUser.id, recipe?.id as string);
         }
 
        if(isOperationSuccess) {
@@ -60,7 +77,7 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
 
     if (recipe) {
         return (
-            <div className=" w-1/3">
+            <div className="w-[30vw]">
             <div className="rounded overflow-hidden shadow-lg flex flex-col">
                 <div onClick={() => setIsVisible(true)}>
                     <div className="relative h-auto">
@@ -126,8 +143,8 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
                     </button>
                 </div>
             </div>
-                <Dialog draggable={false} header={headerContent} visible={isVisible} style={{ width: '50vw' }} onHide={() => {if (!isVisible) return; setIsVisible(false); }}>
-                    <PostDetails recipe={recipe}></PostDetails>
+                <Dialog onHide={onDialogHide} draggable={false} header={dialogHeaderElement} visible={isVisible} style={{ width: '50vw' }}>
+                    {isEditMode ? <EditPost recipe={recipe} onUpdate={postProps.onUpdate} closeEditMode={() => setIsEditMode(false)}></EditPost> : <PostDetails recipe={recipe}></PostDetails>}
                 </Dialog>
             </div>
                 );

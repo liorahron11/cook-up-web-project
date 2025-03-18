@@ -177,11 +177,31 @@ export const postCommentOnPost = (recipeId: string, content: string, parentComme
     }
 }
 
-export const removeComment = (recipeId: string, commentId: string) => {
+export const removeComment = async (recipeId: string, commentId: string) => {
     try {
-        return apiClient.delete(`/comments/${recipeId}/${commentId}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        await apiClient.delete(`/comments/${recipeId}/${commentId}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
     } catch (error) {
         console.error('Error deleting comment:', error);
+        throw error;
+    }
+}
+
+export const updateRecipe = async (recipeId: string, data: FormData) => {
+    try {
+        const response = await apiClient.put(`/recipes/${recipeId}`, data,  {headers: {'Authorization': `Bearer ${user.accessToken}`, 'Content-Type': 'multipart/form-data',}});
+        return response.data;
+    } catch (error: any) {
+        console.error('Error updating recipe:', error.response.data);
+        throw error;
+    }
+}
+
+export const removeRecipe = async (recipeId: string) => {
+    try {
+        const response = await apiClient.delete(`/recipes/${recipeId}`,  {headers: {'Authorization': `Bearer ${user.accessToken}`}});
+        return response.data;
+    } catch (error: any) {
+        console.error('Error updating recipe:', error.response.data);
         throw error;
     }
 }

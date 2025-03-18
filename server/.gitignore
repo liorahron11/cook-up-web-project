@@ -127,3 +127,4 @@ package-lock.json
 *.jfif
 *.jpeg
 *.png
+.env

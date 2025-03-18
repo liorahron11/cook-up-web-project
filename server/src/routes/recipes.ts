@@ -6,11 +6,11 @@ const recipesRoutes: Router = express.Router();
 
 
 /**
-* @swagger
-* tags:
-*   name: Recipes
-*   description: The Recipes API
-*/
+ * @swagger
+ * tags:
+ *   name: Recipes
+ *   description: The Recipes API
+ */
 
 /**
  * @swagger
@@ -200,8 +200,33 @@ recipesRoutes.get("/", authMiddleware,recipesController.getRecipesBySenderId);
  *         500:
  *           description: Error updating recipe
  */
+recipesRoutes.put("/:id", authMiddleware, upload.single('photo'), recipesController.updateRecipe);
 
-recipesRoutes.put("/:id", authMiddleware, recipesController.updateRecipe);
+/**
+ * @swagger
+ * paths:
+ *   /recipes/{id}:
+ *     delete:
+ *       summary: Remove a recipe
+ *       description: Remove a recipe by its ID.
+ *       tags:
+ *         - recipes
+ *       security:
+ *         - bearerAuth: []
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
+ *           description: The ID of the recipe to remove
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Recipe removed successfully
+ *         500:
+ *           description: Error removing recipe
+ */
+recipesRoutes.delete("/:id", authMiddleware, recipesController.removeRecipe);
 
 
 /**
@@ -227,7 +252,7 @@ recipesRoutes.put("/:id", authMiddleware, recipesController.updateRecipe);
  *                   description: The user id that set like on recipe
  *                 recipeId:
  *                   type: string
- *                   description: The recipe id that the user like 
+ *                   description: The recipe id that the user like
  *       responses:
  *         200:
  *           description: recipe updated successfully
@@ -259,7 +284,7 @@ recipesRoutes.post("/like", authMiddleware, recipesController.likeRecipe);
  *                   description: The user id that set dislike on recipe
  *                 recipeId:
  *                   type: string
- *                   description: The recipe id that the user dislike 
+ *                   description: The recipe id that the user dislike
  *       responses:
  *         200:
  *           description: recipe updated successfully
@@ -268,4 +293,5 @@ recipesRoutes.post("/like", authMiddleware, recipesController.likeRecipe);
  */
 
 recipesRoutes.post("/dislike", authMiddleware, recipesController.dislikeRecipe);
+
 export default recipesRoutes;
