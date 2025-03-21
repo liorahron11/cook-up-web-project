@@ -45,6 +45,36 @@ export const updateUserProfile = async (userId: string, data: FormData) => {
     }
 }
 
+export const handleLike = async (userId: string, recipeId: string) => {
+    const data = {
+        "userId": userId,
+        "recipeId": recipeId
+    }
+
+    try {
+        const response = await apiClient.post(`/recipes/like`, data,  {headers: authHeaders});
+        return (response.status == 200);
+    } catch (error: any) {
+        console.error('Error save user like on recipe post', error.response.data);
+        throw error;
+    }
+}
+
+export const handleDislike = async (userId: string, recipeId: string) => {
+    const data = {
+        "userId": userId,
+        "recipeId": recipeId
+    }
+
+    try {
+        const response = await apiClient.post(`/recipes/dislike`, data,  {headers: authHeaders});
+        return (response.status == 200);
+    } catch (error: any) {
+        console.error('Error save user dislike on recipe post', error.response.data);
+        throw error;
+    }
+}
+
 export const googleSignin = async (credentialResponse: CredentialResponse) => {
     try {
         const response = await apiClient.post('/auth/googleSignin', credentialResponse);
@@ -147,11 +177,31 @@ export const postCommentOnPost = (recipeId: string, content: string, parentComme
     }
 }
 
-export const removeComment = (recipeId: string, commentId: string) => {
+export const removeComment = async (recipeId: string, commentId: string) => {
     try {
         return apiClient.delete(`/comments/${recipeId}/${commentId}`, {headers: authHeaders});
     } catch (error) {
         console.error('Error deleting comment:', error);
+        throw error;
+    }
+}
+
+export const updateRecipe = async (recipeId: string, data: FormData) => {
+    try {
+        const response = await apiClient.put(`/recipes/${recipeId}`, data,  {headers: reqIncludeFileHeaders});
+        return response.data;
+    } catch (error: any) {
+        console.error('Error updating recipe:', error.response.data);
+        throw error;
+    }
+}
+
+export const removeRecipe = async (recipeId: string) => {
+    try {
+        const response = await apiClient.delete(`/recipes/${recipeId}`,  {headers: authHeaders});
+        return response.data;
+    } catch (error: any) {
+        console.error('Error updating recipe:', error.response.data);
         throw error;
     }
 }

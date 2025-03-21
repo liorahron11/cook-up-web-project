@@ -27,7 +27,7 @@ export default function GoogleLoginButton() {
     const googleErrorMessage = () => {
         console.log("error");
     }
-
+    
     return (
         <GoogleLogin onSuccess={googleResponseMessage} onError={googleErrorMessage} />
         );

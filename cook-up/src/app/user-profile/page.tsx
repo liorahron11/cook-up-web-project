@@ -64,7 +64,8 @@ export default function UserProfile() {
   };
 
   const postGridProps: PostsGridProps = {
-    posts: recipes
+    posts: recipes,
+    onUpdate: fetchUserData
   }
 
   if (loading) {

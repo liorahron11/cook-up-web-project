@@ -74,11 +74,60 @@ export const fetchRecipesBySender = async (senderId: string): Promise<HydratedDo
     }
 }
 
-export const updateRecipeDetails = async (id: string, title: string): Promise<boolean> => {
-    const result: UpdateWriteOpResult = await Recipe.updateOne({_id: id}, { $set: {title: title}});
+export const deleteRecipeById = async (id: string): Promise<boolean> => {
+    const result = await Recipe.deleteOne({_id: id});
+    if (result.deletedCount > 0) {
+        console.log(`recipe ${id} deleted successfully`);
+
+        return true;
+    } else {
+        console.error(`recipe ${id} not found`);
+
+        return false;
+    }
+}
+
+export const updateRecipeDetails = async (id: string, updatedRecipe: IRecipe): Promise<boolean> => {
+    const result: UpdateWriteOpResult = await Recipe.updateOne({_id: id}, { $set: {...updatedRecipe}});
 
     if (result.modifiedCount > 0) {
         console.log(`recipe ${id} content updated successfully`);
+
+        return true;
+    } else {
+        console.log('recipe not found or content up to date');
+
+        return false;
+    }
+}
+
+export const saveLikeRecipe = async (userId: string, recipeId: string): Promise<boolean> => {
+    const result: UpdateWriteOpResult = await Recipe.findByIdAndUpdate(
+        { _id: recipeId },   
+        { $push: { likes: userId } },
+        { new: true }
+      );
+
+    if (result) {
+        console.log(`userId ${userId} like recipeId ${recipeId} successfully`);
+
+        return true;
+    } else {
+        console.log('recipe not found or content up to date');
+
+        return false;
+    }
+}
+
+export const saveDislikeRecipe = async (userId: string, recipeId: string): Promise<boolean> => {
+    const result: UpdateWriteOpResult = await Recipe.findByIdAndUpdate(
+        {_id: recipeId},
+        {$pull: { likes: userId }},
+        { new: true }
+      );
+
+    if (result) {
+        console.log(`userId ${userId} dislike recipeId ${recipeId} successfully`);
 
         return true;
     } else {

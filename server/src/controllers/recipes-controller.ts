@@ -3,15 +3,15 @@ import {HydratedDocument} from "mongoose";
 import {IRecipe} from "../interfaces/recipe.interface";
 import { Request, Response } from 'express';
 import {
-    addNewRecipe,
+    addNewRecipe, deleteRecipeById,
     fetchAllRecipes,
     fetchRecipeById,
     fetchRecipesBySender,
-    updateRecipeDetails
+    updateRecipeDetails,
+    saveLikeRecipe,
+    saveDislikeRecipe
 } from "../queries/recipe-queries";
 import {generateRecipes} from "../queries/gemini-queries";
-import {IComment} from "../interfaces/comment.interface";
-import comments from "../routes/comments";
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
@@ -101,10 +101,16 @@ const getRecipesBySenderId = async (req: Request, res: Response) => {
 
 const updateRecipe = async (req: Request, res: Response) => {
     const recipeId: string = req.params.id;
-    const newTitle: string = req.body.title;
+    let updatedRecipe: IRecipe = JSON.parse(req.body.recipe);
 
-    if (recipeId) {
-        const isRecipeUpdated: boolean = await updateRecipeDetails(recipeId ,newTitle);
+    if (recipeId && updatedRecipe) {
+        if((req as any).file) {
+            updatedRecipe.image = (req as any).file.path;
+        } else {
+            updatedRecipe.image = '';
+        }
+
+        const isRecipeUpdated: boolean = await updateRecipeDetails(recipeId, updatedRecipe);
 
         if (isRecipeUpdated) {
             res.status(200).send('recipe updated successfully');
@@ -113,6 +119,56 @@ const updateRecipe = async (req: Request, res: Response) => {
         }
     } else {
         res.status(500).send('recipe ID not exist');
+    }
+};
+
+const removeRecipe = async (req: Request, res: Response) => {
+    const recipeId: string = req.params.id;
+
+    if (recipeId) {
+        const isRecipeRemoved: boolean = await deleteRecipeById(recipeId);
+
+        if (isRecipeRemoved) {
+            res.status(200).send('recipe removed successfully');
+        } else {
+            res.status(500).send('error removing the recipe');
+        }
+    } else {
+        res.status(500).send('recipe ID not exist');
+    }
+}
+
+const likeRecipe = async (req: Request, res: Response) => {
+    const userId: string = req.body.userId;
+    const recipeId: string = req.body.recipeId;
+
+    if (userId && recipeId) {
+        const isRecipeUpdated: boolean = await saveLikeRecipe(userId, recipeId);
+
+        if (isRecipeUpdated) {
+            res.status(200).send('recipe liked successfully');
+        } else {
+            res.status(500).send('error like the recipe');
+        }
+    } else {
+        res.status(500).send('recipe ID or user ID not exist');
+    }
+};
+
+const dislikeRecipe = async (req: Request, res: Response) => {
+    const userId: string = req.body.userId;
+    const recipeId: string = req.body.recipeId;
+
+    if (userId && recipeId) {
+        const isRecipeUpdated: boolean = await saveDislikeRecipe(userId, recipeId);
+
+        if (isRecipeUpdated) {
+            res.status(200).send('recipe disliked successfully');
+        } else {
+            res.status(500).send('error disliked the recipe');
+        }
+    } else {
+        res.status(500).send('recipe ID or user ID not exist');
     }
 };
 
@@ -146,5 +202,8 @@ export default {
     getAllRecipes,
     getRecipeById,
     getRecipesBySenderId,
-    updateRecipe
+    likeRecipe,
+    dislikeRecipe,
+    updateRecipe,
+    removeRecipe
 };

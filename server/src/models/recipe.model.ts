@@ -36,6 +36,7 @@ const recipeSchema: Schema<IRecipe, RecipeModel> = new Schema<IRecipe, RecipeMod
     ingredients: { type: [ingredientSchema], required: true },
     instructions: { type: String, required: true },
     image: { type: String},
+    likes: { type: [String], required: true, default: []},
     comments: { type: [CommentSchema], default: [] },
     isAI: { type: Boolean, required: false },
 });

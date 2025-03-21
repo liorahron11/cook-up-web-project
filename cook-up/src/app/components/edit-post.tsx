@@ -1,20 +1,17 @@
 "use client";
 
-import Card from "@/app/components/card";
 import Input, {IInputProps} from "@/app/login/input";
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {FieldErrors, FieldValues, useForm} from "react-hook-form";
-import {useRouter} from "next/navigation";
 import {IRecipe} from "@server/interfaces/recipe.interface";
-import {createRecipe} from "@/app/services/rest.service";
 import {getUserFromLocalStorage} from "@/app/services/local-storage.service";
 import IngredientsInputGroup from "@/app/components/ingredients-input-group";
 import CreateRecipeButton from "@/app/create-recipe/create-recipe-button";
 import {IIngredient} from "@server/interfaces/ingredients.interface";
-import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
+import CancelButton from "@/app/components/cancel-button";
+import {updateRecipe} from "@/app/services/rest.service";
 
-export default function CreateRecipe() {
-    const router: AppRouterInstance = useRouter();
+export default function EditPost({recipe, closeEditMode, onUpdate}: {recipe: IRecipe, closeEditMode?: () => void, onUpdate?: () => void}) {
     const [formData, setFormData] = useState<{title: string, description: string, ingredients: IIngredient[], instructions: string}>({
         title: '',
         description: '',
@@ -25,6 +22,11 @@ export default function CreateRecipe() {
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    useEffect(() => {
+        if (recipe.image) {
+            setPhotoPreview(recipe.image);
+        }
+    }, []);
     const handleIngredientsGroupStateChange = (newState: IIngredient[]) => {
         setFormData((prevData) => {
             return {...prevData, ingredients: newState}
@@ -71,17 +73,17 @@ export default function CreateRecipe() {
     };
 
     const { register, handleSubmit, formState: { errors } } = useForm<IRecipe>({ reValidateMode: 'onSubmit'});
-    const onSubmit = (recipe: IRecipe) => {
+    const onSubmit = (updatedRecipe: IRecipe) => {
         const formDataToSend = new FormData();
 
         const newRecipeFields: IRecipe = {
-            timestamp: new Date(),
+            timestamp: recipe.timestamp,
             senderId: getUserFromLocalStorage().id,
-            title: recipe.title,
-            description: recipe.description,
+            title: updatedRecipe.title,
+            description: updatedRecipe.description,
             ingredients: formData.ingredients,
-            instructions: recipe.instructions,
-            comments: [],
+            instructions: updatedRecipe.instructions,
+            comments: recipe.comments,
             likes: recipe.likes
         };
 
@@ -91,17 +93,30 @@ export default function CreateRecipe() {
             formDataToSend.append('photo', photo);
         }
 
-        createRecipe(formDataToSend)
-            .then((res) => {
-                console.log(res);
-                router.push('/');
+        updateRecipe(recipe.id as string, formDataToSend)
+            .then(() => {
+                if (onUpdate) {
+                    onUpdate();
+                }
+
+                if (closeEditMode) {
+                    closeEditMode();
+                }
             });
     };
+
+    const handleCancel = () => {
+        if (closeEditMode) {
+            closeEditMode();
+        }
+    };
+
 
     const inputs: IInputProps[] = [
         {
             id: TITLE_FIELD_ID,
             label: "שם המתכון",
+            defaultValue: recipe.title,
             type: "text",
             validationFields: {
                 required: true,
@@ -113,6 +128,7 @@ export default function CreateRecipe() {
             id: DESCRIPTION_FIELD_ID,
             label: "תיאור",
             type: "textarea",
+            value: recipe.description,
             validationFields: {
                 required: true,
                 minLength: 10,
@@ -122,6 +138,7 @@ export default function CreateRecipe() {
         {
             id: INGREDIENTS_FIELD_ID,
             label: "מצרכים",
+            value: recipe.ingredients,
             type: "ingredients",
             validationFields: {
                 required: true,
@@ -131,6 +148,7 @@ export default function CreateRecipe() {
         {
             id: INSTRUCTIONS_FIELD_ID,
             label: "הוראות הכנה",
+            value: recipe.instructions,
             type: "textarea",
             validationFields: {
                 required: true,
@@ -155,16 +173,16 @@ export default function CreateRecipe() {
             .join(' ');
     }
 
-    return (<Card>
+    return (<div className="w-full max-w-2xl m-auto flex flex-col justify-center items-center">
         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                יצירת מתכון חדש
+                ערוך מתכון
             </h1>
 
-            <form className="space-y-6 mt-6" onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+            <form className="space-y-6 mt-6" onSubmit={handleSubmit(onSubmit)} onReset={handleCancel} encType="multipart/form-data">
                 {inputs.map((input: IInputProps) => {
                     if (input.type === 'ingredients') {
-                        return <IngredientsInputGroup key={input.id} registerAction={register} onStateChange={handleIngredientsGroupStateChange}></IngredientsInputGroup>;
+                        return <IngredientsInputGroup ingredients={input.value} key={input.id} registerAction={register} onStateChange={handleIngredientsGroupStateChange}></IngredientsInputGroup>;
                     } else {
                         return <Input key={input.id} inputProps={input} className="w-[20vw]"
                                       registerAction={register}></Input>;
@@ -241,7 +259,10 @@ export default function CreateRecipe() {
                     </div>
                 </div>
 
-                <CreateRecipeButton/>
+                <div className="flex justify-center items-center gap-6">
+                    <CreateRecipeButton/>
+                    <CancelButton label={"ביטול"}></CancelButton>
+                </div>
 
                 <div className="m-auto mt-6 w-fit md:mt-8">
                     {((errors["title"] || errors["description"] || errors["ingredients"] || errors["instructions"]) &&
@@ -251,5 +272,5 @@ export default function CreateRecipe() {
                 </div>
             </form>
         </div>
-    </Card>);
+    </div>);
 }
