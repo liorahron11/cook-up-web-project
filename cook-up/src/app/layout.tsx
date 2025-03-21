@@ -21,7 +21,7 @@ const currentStoredUser = getUserFromLocalStorage();
 
 const headerProps: HeaderProps = {
     userAvatarProps: {
-        src: `${currentStoredUser.profilePictureUrl}`
+        src: `${currentStoredUser?.profilePictureUrl}`
     },
     navbarItems: [
         {

@@ -74,7 +74,8 @@ export default function UserProfile() {
                 <div className="flex min-h-[88vh] flex-col items-center py-12 sm:px-6 lg:px-8">
                     <div className="flex flex-row items-center justify-content gap-20">
                         <div>
-                            <img className="w-20 h-20 rounded-full" src="https://tecdn.b-cdn.net/img/new/avatars/2.jpg"
+                            <img className="w-20 h-20 rounded-full" 
+                             src={`${user?.profilePictureUrl || "avatar.png"}`}
                                  alt="Rounded avatar"/>
                         </div>
                         <div className="flex flex-col items-start">

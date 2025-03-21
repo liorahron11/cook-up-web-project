@@ -16,15 +16,19 @@ export default function GoogleLoginButton() {
                 username: response.username,
                 id: response._id,
                 isGoogleUser: response.isGoogleUser,
-                accessToken: response.accessToken,
-                profilePictureUrl: response.profilePictureUrl,
+                accessToken: response?.accessToken,
+                profilePictureUrl: response?.profilePictureUrl,
             });
             
             router.push('/');
             });
     }
 
+    const googleErrorMessage = () => {
+        console.log("error");
+    }
+    
     return (
-        <GoogleLogin onSuccess={googleResponseMessage} />
+        <GoogleLogin onSuccess={googleResponseMessage} onError={googleErrorMessage} />
         );
 }

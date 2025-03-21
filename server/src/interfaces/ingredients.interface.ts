@@ -1,4 +1,4 @@
-import {EIngredientUnit} from "@client/app/enums/ingredient-unit.enum";
+import {EIngredientUnit} from "../enums/ingredient-unit.enum";
 
 export interface IIngredient {
     name: string;

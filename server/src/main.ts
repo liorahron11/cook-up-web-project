@@ -10,6 +10,9 @@ import swaggerJsDoc from "swagger-jsdoc";
 import usersRoutes from "./routes/users";
 import recipesRoutes from "./routes/recipes";
 import aiRoutes from "./routes/ai";
+import https from "https";
+import fs from "fs";
+import { url } from "inspector";
 require('dotenv').config();
 
  const options = {
@@ -20,7 +23,10 @@ require('dotenv').config();
         version: "1.0.0",
         description: "REST server including authentication using JWT",
     },
-    servers: [{url: `http://localhost:${process.env.PORT}`,},],
+    servers: [{url: `http://localhost:${process.env.PORT}`,},
+            {url: `http://10.10.246.6`,},
+            {url: `https://10.10.246.6`,}, {url: `https://node06.cs.colman.ac.il:4000`,}
+        ],
     },
     apis: ["./src/routes/*.ts"],
  };
@@ -42,10 +48,18 @@ const initRoutes = (app: Express) => {
 
 const runApp = (app: Express) => {
     const port: number = Number(process.env.PORT);
-
-    return app.listen(port, () => {
-        return console.log(`app is running at port ${port}`);
-    });
+    if(process.env.NODE_ENV != "production"){ 
+        return app.listen(port, () => {
+            return console.log(`app is running at port ${port}`);
+        });
+    } else {
+        const prop = {
+            key: fs.readFileSync("../../client-key.pem"),
+            cert: fs.readFileSync("../../client-cert.pem")
+        }
+        console.log(`app is running at port ${port} on prod mode `);
+        https.createServer(prop, app).listen(port);
+    }
 }
 
 connectToDB();

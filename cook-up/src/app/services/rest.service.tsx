@@ -7,7 +7,7 @@ import {extractRecipeImage} from "@/app/services/images.service";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 const user: LocalStorageUser = getUserFromLocalStorage();
 
-const baseURL:string = 'http://localhost:5000';
+const baseURL:string = 'https://node06.cs.colman.ac.il:4000';
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: baseURL,
@@ -17,12 +17,12 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 const reqIncludeFileHeaders = {
-    'Authorization': `Bearer ${user.accessToken}`,
+    'Authorization': `Bearer ${user?.accessToken}`,
     'Content-Type': 'multipart/form-data',
 };
 
 const authHeaders = {
-    'Authorization': `Bearer ${user.accessToken}`
+    'Authorization': `Bearer ${user?.accessToken}`
 }
 
 export const registerUser = async (data: Partial<IUser>) => {
@@ -144,7 +144,7 @@ export const getUserRecipes = async (userId: string) => {
 
 export const getRecipeById = async (recipeId: string) => {
     try {
-        const response = await apiClient.get(`/recipes/${recipeId}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        const response = await apiClient.get(`/recipes/${recipeId}`, {headers: authHeaders});
         return response.data;
     } catch (error) {
         console.error('Error fetching recipe:', error);
@@ -170,7 +170,7 @@ export const postCommentOnPost = (recipeId: string, content: string, parentComme
             comments: [],
             timestamp: new Date(),
         }
-        return apiClient.post(`/comments/${recipeId}`, {comment: commentToPost, parentCommentId}, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        return apiClient.post(`/comments/${recipeId}`, {comment: commentToPost, parentCommentId}, {headers: authHeaders});
     } catch (error) {
         console.error('Error posting comment:', error);
         throw error;
@@ -179,7 +179,7 @@ export const postCommentOnPost = (recipeId: string, content: string, parentComme
 
 export const removeComment = async (recipeId: string, commentId: string) => {
     try {
-        await apiClient.delete(`/comments/${recipeId}/${commentId}`, {headers: {Authorization: `Bearer ${user.accessToken}`}});
+        return apiClient.delete(`/comments/${recipeId}/${commentId}`, {headers: authHeaders});
     } catch (error) {
         console.error('Error deleting comment:', error);
         throw error;
@@ -188,7 +188,7 @@ export const removeComment = async (recipeId: string, commentId: string) => {
 
 export const updateRecipe = async (recipeId: string, data: FormData) => {
     try {
-        const response = await apiClient.put(`/recipes/${recipeId}`, data,  {headers: {'Authorization': `Bearer ${user.accessToken}`, 'Content-Type': 'multipart/form-data',}});
+        const response = await apiClient.put(`/recipes/${recipeId}`, data,  {headers: reqIncludeFileHeaders});
         return response.data;
     } catch (error: any) {
         console.error('Error updating recipe:', error.response.data);
@@ -198,7 +198,7 @@ export const updateRecipe = async (recipeId: string, data: FormData) => {
 
 export const removeRecipe = async (recipeId: string) => {
     try {
-        const response = await apiClient.delete(`/recipes/${recipeId}`,  {headers: {'Authorization': `Bearer ${user.accessToken}`}});
+        const response = await apiClient.delete(`/recipes/${recipeId}`,  {headers: authHeaders});
         return response.data;
     } catch (error: any) {
         console.error('Error updating recipe:', error.response.data);

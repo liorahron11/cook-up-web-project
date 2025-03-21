@@ -6,13 +6,13 @@ export interface LocalStorageUser {
     username: string;
     profilePictureUrl?:string;
     isGoogleUser?: boolean;
-    accessToken: string;
+    accessToken?: string;
 }
 const USER_KEY: string = 'user';
 
 export const saveUserToLocalStorage = (user: LocalStorageUser) => {
-    if(user.isGoogleUser != true && user.profilePictureUrl){
-        const fullUrl: any =  'http://localhost:5000/uploads/' + extractProfilePicture(user.profilePictureUrl);
+    if(user.isGoogleUser != true && user?.profilePictureUrl){
+        const fullUrl: any =  'https://node06.cs.colman.ac.il:4000/uploads/' + extractProfilePicture(user?.profilePictureUrl);
         user.profilePictureUrl = fullUrl;
     }
 
@@ -20,15 +20,21 @@ export const saveUserToLocalStorage = (user: LocalStorageUser) => {
 }
 
 export const getUserFromLocalStorage: () => LocalStorageUser = () => {
+    if (typeof window !== "undefined") {
+
     const user: string | null = localStorage.getItem(USER_KEY);
 
     if (user) {
         return JSON.parse(user);
+    }
     }
 
     return null;
 }
 
 export const removeUserFromLocalStorage = () => {
-    localStorage.removeItem(USER_KEY);
+    if (typeof window !== "undefined") {
+        localStorage.removeItem(USER_KEY);
+    }
+
 }

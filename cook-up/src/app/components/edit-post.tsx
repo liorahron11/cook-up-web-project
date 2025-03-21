@@ -83,7 +83,8 @@ export default function EditPost({recipe, closeEditMode, onUpdate}: {recipe: IRe
             description: updatedRecipe.description,
             ingredients: formData.ingredients,
             instructions: updatedRecipe.instructions,
-            comments: recipe.comments
+            comments: recipe.comments,
+            likes: recipe.likes
         };
 
         formDataToSend.append('recipe', JSON.stringify(newRecipeFields));

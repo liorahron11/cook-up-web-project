@@ -81,7 +81,8 @@ export default function CreateRecipe() {
             description: recipe.description,
             ingredients: formData.ingredients,
             instructions: recipe.instructions,
-            comments: []
+            comments: [],
+            likes: recipe.likes
         };
 
         formDataToSend.append('recipe', JSON.stringify(newRecipeFields));
