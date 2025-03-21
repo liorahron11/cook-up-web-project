@@ -19,7 +19,7 @@ interface EditProfileModalProps {
 export default function EditProfileModal({ isVisible, onHide, user, onProfileUpdated }: EditProfileModalProps) {
   const [username, setUsername] = useState(user.username);
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(user.profilePictureUrl || null);
+  const [imagePreview, setImagePreview] = useState<string | null>(user?.profilePictureUrl || null);
   const [loading, setLoading] = useState(false);
   const toast = useRef<Toast>(null);
   const fileUploadRef = useRef<any>(null);

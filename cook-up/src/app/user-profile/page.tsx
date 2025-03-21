@@ -49,7 +49,7 @@ export default function UserProfile() {
         
         const updatedLocalStorageUser: any = {
           ...userAfterUpdate,
-          accessToken: currentStoredUser.accessToken
+          accessToken: currentStoredUser?.accessToken
         };
         
         saveUserToLocalStorage(updatedLocalStorageUser);
@@ -87,7 +87,7 @@ export default function UserProfile() {
           <div>
             <img 
               className="w-20 h-20 rounded-full object-cover" 
-              src={`${user.profilePictureUrl}`}
+              src={`${user?.profilePictureUrl || "avatar.png"}`}
               alt="תמונת פרופיל"
             />
           </div>

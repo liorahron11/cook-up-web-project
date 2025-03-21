@@ -50,8 +50,8 @@ export default function LoginCard() {
                     email: userInfo.email,
                     username: userInfo.username,
                     id: userInfo._id,
-                    profilePictureUrl: userInfo.profilePictureUrl,
-                    accessToken: userInfo.accessToken
+                    accessToken: userInfo?.accessToken,
+                    profilePictureUrl: userInfo?.profilePictureUrl
                     });
                 router.push('/');
             });

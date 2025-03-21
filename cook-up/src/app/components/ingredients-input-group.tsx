@@ -7,6 +7,7 @@ import {IIngredient} from "@server/interfaces/ingredients.interface";
 import {Button} from "primereact/button";
 
 export default function IngredientsInputGroup({registerAction, onStateChange }: {registerAction: UseFormRegister<any>, onStateChange: (newState: IIngredient[]) => void}) {
+    // @ts-ignore
     const [currentIngredients, setCurrentIngredients] = React.useState<IIngredient[]>([{quantity: 0, unit: null, name: ''}]);
     const [isHovered, setIsHovered] = React.useState<boolean[]>([false]);
     const ingredientOptions = Object.values(EIngredientUnit).map((unit) => ({
@@ -76,8 +77,10 @@ export default function IngredientsInputGroup({registerAction, onStateChange }: 
     };
 
     const addIngredient = () => {
+        // @ts-ignore
         setCurrentIngredients([...currentIngredients, {
             quantity: 0,
+            // @ts-ignore
             unit: null,
             name: ''
         }]);
