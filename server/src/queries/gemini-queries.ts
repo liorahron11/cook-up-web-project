@@ -16,6 +16,7 @@ export const generateRecipes = async (): Promise<IRecipe[]> => {
     const prompt: string = getRecipesPrompt();
 
     try {
+        console.log('generating AI recipes...');
         const result: GenerateContentResult = await model.generateContent(prompt);
 
         const match: RegExpMatchArray = result.response.text().match(/```json([\s\S]*?)```/);

@@ -1,12 +1,11 @@
 import axios, {AxiosInstance, AxiosResponse} from 'axios';
 import {IUser} from "@/app/models/user.interface";
-import {getUserFromLocalStorage, LocalStorageUser} from "@/app/services/local-storage.service";
+import {getUserFromLocalStorage} from "@/app/services/local-storage.service";
 import {CredentialResponse} from "@react-oauth/google";
 import {IComment} from "@server/interfaces/comment.interface";
 import {extractRecipeImage} from "@/app/services/images.service";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import {serverUrl} from "@/app/consts";
-const user: LocalStorageUser = getUserFromLocalStorage();
 
 const baseURL:string = serverUrl;
 
@@ -18,12 +17,12 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 const reqIncludeFileHeaders = {
-    'Authorization': `Bearer ${user?.accessToken}`,
+    'Authorization': `Bearer ${getUserFromLocalStorage()?.accessToken}`,
     'Content-Type': 'multipart/form-data',
 };
 
 const authHeaders = {
-    'Authorization': `Bearer ${user?.accessToken}`
+    'Authorization': `Bearer ${getUserFromLocalStorage()?.accessToken}`
 }
 
 export const registerUser = async (data: Partial<IUser>) => {
@@ -177,7 +176,7 @@ export const postCommentOnPost = (recipeId: string, content: string, parentComme
     try {
         const commentToPost: IComment = {
             content: content,
-            senderId: user.id,
+            senderId: getUserFromLocalStorage().id,
             comments: [],
             timestamp: new Date(),
         }

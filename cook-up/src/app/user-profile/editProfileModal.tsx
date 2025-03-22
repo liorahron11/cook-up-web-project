@@ -106,7 +106,7 @@ export default function EditProfileModal({ isVisible, onHide, user, onProfileUpd
           <div className="flex flex-col items-center mb-4">
             <div className="relative">
               <img 
-                src={imagePreview || "https://tecdn.b-cdn.net/img/new/avatars/2.jpg"} 
+                src={imagePreview || "/avatar.png"}
                 alt="תמונת פרופיל" 
                 className="w-24 h-24 rounded-full object-cover"
               />

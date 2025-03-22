@@ -57,7 +57,7 @@ export default function Register() {
                 id: userRegistered._id,
                 profilePictureUrl: userRegistered.profilePicture,
                 accessToken: userRegistered?.accessToken,
-                refreshToken: response?.refreshToken,
+                refreshToken: userRegistered?.refreshToken,
             });
             router.push('/');
         });
