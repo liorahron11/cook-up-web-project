@@ -37,7 +37,7 @@ const addRecipe = async (req: Request, res: Response) => {
 
 const getAllRecipes = async (req: Request, res: Response) => {
     try {
-        if (Math.random() < 0.1) {
+        if (Math.random() < 0.3) {
             await generateRecipes();
         }
 
