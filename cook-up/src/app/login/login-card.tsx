@@ -52,7 +52,7 @@ export default function LoginCard() {
                     id: userInfo._id,
                     accessToken: userInfo?.accessToken,
                     profilePictureUrl: userInfo?.profilePictureUrl,
-                    refreshToken: response?.refreshToken,
+                    refreshToken: userInfo?.refreshToken,
                 });
                 router.push('/');
             });
