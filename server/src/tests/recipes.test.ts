@@ -12,7 +12,8 @@ const recipeMock: IRecipe = {
     "description": "testing recipe",
     "ingredients": [],
     "instructions": "test",
-    "comments": []
+    "comments": [],
+    "likes": [],
 };
 
 type User = IUser & {
@@ -49,10 +50,9 @@ describe('Recipes API', () => {
     describe('POST /recipes', () => {
         it('should create a new recipe', async () => {
             const res = await request(server).post('/recipes')
-                .send({recipe: recipeMock})
+                .send({recipe: JSON.stringify(recipeMock)})
                 .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json')
-                .set({ authorization: "JWT " + testUser.accessToken });
+                .set({ authorization: "Bearer " + testUser.accessToken });
 
             expect(res.status).toBe(201);
             expect(res.body.message).toBe('recipe added successfully');
@@ -70,7 +70,7 @@ describe('Recipes API', () => {
             const res = await request(server).get('/recipes/all').set(
                 { authorization: "JWT " + testUser.accessToken });
             expect(res.status).toBe(200);
-            expect(res.body).toBeInstanceOf(Array);
+            expect(res.body?.recipes).toBeInstanceOf(Array);
         });
 
         it('should return a recipe with mock recipe id ', async () => {
@@ -78,7 +78,7 @@ describe('Recipes API', () => {
             const res = await request(server).get(`/recipes/${recipeMock.id}`).set(
                 { authorization: "JWT " + testUser.accessToken });
             expect(res.status).toBe(200);
-            expect(res.body._id).toBe(recipeMock.id);
+            expect(res.body.id).toBe(recipeMock.id);
         });
 
         it('should return a recipes with senderID 155', async () => {
@@ -98,11 +98,10 @@ describe('Recipes API', () => {
         it('should update recipe content', async () => {
 
             const newRecipesFields: Partial<IRecipe> = { title: 'new recipes title' };
-
+            const bodyToSend = JSON.stringify({recipe: newRecipesFields});
             const res = await request(server).put(`/recipes/${recipeMock.id}`)
-                .send(newRecipesFields)
+                .send(bodyToSend)
                 .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json')
                 .set({ authorization: "JWT " + testUser.accessToken });
 
             expect(res.status).toBe(200);
@@ -124,9 +123,8 @@ describe('Recipes API', () => {
                 };
     
                 const res = await request(server).post('/recipes')
-                    .send({ recipe: invalidRecipeMock })
+                    .send({ recipe: JSON.stringify(invalidRecipeMock) })
                     .set('Content-Type', 'application/json')
-                    .set('Accept', 'application/json')
                     .set({ authorization: "JWT " + testUser.accessToken });
     
                 // Expect failure because required fields are missing
@@ -145,8 +143,7 @@ describe('Recipes API', () => {
                 const res = await request(server).post('/recipes')
                     .send({ recipe: recipeMockWithValidData })
                     .set('Content-Type', 'application/json')
-                    .set('Accept', 'application/json');
-    
+
                 // Expect failure because the user is not authorized
                 expect(res.status).toBe(401); // Controller returns 500 for unauthorized access
                 expect(res.text).toBe('Access Denied');

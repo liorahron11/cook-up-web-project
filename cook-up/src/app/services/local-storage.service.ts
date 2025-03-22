@@ -1,4 +1,5 @@
 import {extractProfilePicture} from "@/app/services/images.service";
+import {serverUrl} from "@/app/consts";
 
 export interface LocalStorageUser {
     id: string;
@@ -7,15 +8,23 @@ export interface LocalStorageUser {
     profilePictureUrl?:string;
     isGoogleUser?: boolean;
     accessToken?: string;
+    refreshToken?: string;
 }
 const USER_KEY: string = 'user';
 
 export const saveUserToLocalStorage = (user: LocalStorageUser) => {
-    if(user.isGoogleUser != true && user?.profilePictureUrl){
-        const fullUrl: any =  'https://node06.cs.colman.ac.il:4000/uploads/' + extractProfilePicture(user?.profilePictureUrl);
+    if(!user.isGoogleUser && user?.profilePictureUrl){
+        const fullUrl: any =  `${serverUrl}/uploads/` + extractProfilePicture(user?.profilePictureUrl);
         user.profilePictureUrl = fullUrl;
     }
 
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
+export const setTokensToLocalStorage = (tokens: { accessToken: string, refreshToken: string }) => {
+    const user: LocalStorageUser = getUserFromLocalStorage();
+    user.accessToken = tokens.accessToken;
+    user.refreshToken = tokens.refreshToken;
     localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 

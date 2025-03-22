@@ -121,7 +121,7 @@ const getRecipesPrompt: () => string = () => {
 }
 
 const attachExtraInfo: (recipes: IRecipe[]) => Promise<IRecipe[]> = async (recipes: IRecipe[]): Promise<IRecipe[]> => {
-    const cookUpUserID: string = '67d56915c6bdec082a0592c6';
+    const cookUpUserID: string = '67de9d445953bd0bebd85b72';
 
     return Promise.all(
         recipes.map(async (recipe: IRecipe) => {

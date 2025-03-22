@@ -1,9 +1,9 @@
 import React from "react";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import {IIngredient} from "@server/interfaces/ingredients.interface";
-import {EIngredientUnit} from "@/app/enums/ingredient-unit.enum";
 import CommentsSection from "@/app/components/comments/comments-section";
 import Divider from "@/app/login/divider";
+import {EIngredientUnit} from "@/app/enums/ingredient-unit.enum";
 
 export default function PostDetails({recipe}: { recipe: IRecipe }) {
     return (                    <div className="m-0">
@@ -20,7 +20,7 @@ export default function PostDetails({recipe}: { recipe: IRecipe }) {
                 <div className='mb-5'>
                     <h2 className="font-bold">מצרכים:</h2>
                     <div className="flex flex-col">
-                        {recipe.ingredients.map((ingredient: IIngredient) => (<span className="text-sm" key={ingredient.name}>{ingredient.quantity} {ingredient.unit} {ingredient.name}</span>))}
+                        {recipe.ingredients.map((ingredient: IIngredient) => (<span className="text-sm" key={ingredient.name}>{ingredient.quantity} {(EIngredientUnit as any)[ingredient.unit]} {ingredient.name}</span>))}
                     </div>
                 </div>
                 <div className='mb-5'>

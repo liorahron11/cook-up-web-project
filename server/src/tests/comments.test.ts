@@ -13,18 +13,21 @@ const recipeMock: IRecipe = {
     "description": "testing post",
     "ingredients": [],
     "instructions": "test",
+    likes: [],
     comments: [
         {
             timestamp: new Date(),
             content: 'test comment',
-            senderId: "345"
+            senderId: "345",
+            comments: [],
         }
     ]
 };
 const commentMock: IComment = {
     timestamp: new Date(),
     content: 'new comment',
-    senderId: "92"
+    senderId: "92",
+    comments: [],
 }
 
 type User = IUser & {
@@ -66,7 +69,6 @@ describe('Comments API', () => {
             const res = await request(server).post(`/comments/${recipeMock.id}`)
                 .send({comment: commentMock})
                 .set('Content-Type', 'application/json')
-                .set('Accept', 'application/json')
                 .set({ authorization: "JWT " + testUser.accessToken });
 
             expect(res.status).toBe(201);
@@ -111,7 +113,7 @@ describe('Comments API', () => {
             const res = await request(server).get(`/comments/${recipeMock.id}/${recipeMock.comments[0].id}`).set(
                 { authorization: "JWT " + testUser.accessToken });
             const comment: any = res.body;
-            const retComment = { _id: comment._id, content: comment.content, senderId: comment.senderId};                
+            const retComment = { _id: comment._id, content: comment.content, senderId: comment.senderId, comments: comment.comments, timestamp: comment.timestamp};
             expect(res.status).toBe(200);
             expect(retComment).toMatchObject(comment);
         });

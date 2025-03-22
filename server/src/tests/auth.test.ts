@@ -34,7 +34,8 @@ const baseUrl = "/auth";
       "description": "testing recipe",
       "ingredients": [],
       "instructions": "test",
-      "comments": []
+      "comments": [],
+        "likes": [],
   };
 
 describe("Auth Tests", () => {
@@ -98,11 +99,11 @@ describe("Auth Tests", () => {
   
     test("Auth test me", async () => {
       const response = await request(server).post("/recipes").send({
-        recipe : {
-        senderId: "155",
-        content: "testing post",
-        comments: []
-      }});
+        recipe : JSON.stringify({
+            senderId: "155",
+            content: "testing post",
+            comments: []
+        })});
       expect(response.statusCode).not.toBe(201);
       const response2 = await request(server).post("/recipes").set(
         { authorization: "JWT " + testUser.accessToken }

@@ -5,9 +5,10 @@ import {CredentialResponse} from "@react-oauth/google";
 import {IComment} from "@server/interfaces/comment.interface";
 import {extractRecipeImage} from "@/app/services/images.service";
 import {IRecipe} from "@server/interfaces/recipe.interface";
+import {serverUrl} from "@/app/consts";
 const user: LocalStorageUser = getUserFromLocalStorage();
 
-const baseURL:string = 'https://node06.cs.colman.ac.il:4000';
+const baseURL:string = serverUrl;
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: baseURL,
@@ -31,6 +32,16 @@ export const registerUser = async (data: Partial<IUser>) => {
         return response.data;
     } catch (error: any) {
         console.error('Error registering user:', error.response.data);
+        throw error;
+    }
+}
+
+export const refreshToken = async (userId: string, token: string) => {
+    try {
+        const response = await apiClient.post('/auth/refresh', {userId, token})
+        return response.data;
+    } catch (error: any) {
+        console.error('Error refreshing token:', error);
         throw error;
     }
 }
@@ -80,7 +91,7 @@ export const googleSignin = async (credentialResponse: CredentialResponse) => {
         const response = await apiClient.post('/auth/googleSignin', credentialResponse);
         return response.data;
     } catch (error: any) {
-        console.error('Error registering user using google:', error.response.data);
+        console.error('Error registering user using google:', error);
         throw error;
     }
 }

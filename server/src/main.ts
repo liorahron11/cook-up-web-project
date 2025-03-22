@@ -12,7 +12,6 @@ import recipesRoutes from "./routes/recipes";
 import aiRoutes from "./routes/ai";
 import https from "https";
 import fs from "fs";
-import { url } from "inspector";
 require('dotenv').config();
 
  const options = {
@@ -23,7 +22,8 @@ require('dotenv').config();
         version: "1.0.0",
         description: "REST server including authentication using JWT",
     },
-    servers: [{url: `http://localhost:${process.env.PORT}`,},
+        servers:
+            [{url: `http://localhost:${process.env.PORT}`,},
             {url: `http://10.10.246.6`,},
             {url: `https://10.10.246.6`,}, {url: `https://node06.cs.colman.ac.il:4000`,}
         ],

@@ -6,9 +6,16 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import RecipePost from "@/app/components/posts";
 import { getUserByID } from "@/app/services/users-service";
 import { IUser } from "@/app/models/user.interface";
-import { getRecipes } from "@/app/services/rest.service";
+import {getRecipes, refreshToken} from "@/app/services/rest.service";
 import { Button } from "primereact/button";
 import _ from "lodash";
+import {
+  getUserFromLocalStorage, LocalStorageUser,
+  removeUserFromLocalStorage,
+  setTokensToLocalStorage
+} from "@/app/services/local-storage.service";
+import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
+import {useRouter} from "next/navigation";
 
 export default function Home() {
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
@@ -52,6 +59,29 @@ export default function Home() {
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(refreshAccessToken, 15 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const refreshAccessToken = () => {
+    const userLoggedIn: LocalStorageUser = getUserFromLocalStorage();
+    if (userLoggedIn) {
+      refreshToken(userLoggedIn.id, userLoggedIn.refreshToken as string)
+          .then(res => {
+            setTokensToLocalStorage(res);
+          })
+          .catch(err => {
+            console.log('Refresh failed', err);
+
+            const router: AppRouterInstance = useRouter();
+            removeUserFromLocalStorage();
+            router.push('/login');
+          });
+    }
+  }
 
   const fetchInitialData = async () => {
     try {

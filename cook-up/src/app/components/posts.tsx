@@ -82,7 +82,7 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
                 <div onClick={() => setIsVisible(true)}>
                     <div className="relative h-auto">
                         <img
-                            src={recipe.image}
+                            src={recipe.image ? recipe.image : '/recipe.jpg'}
                             alt="recipe image"/>
                     </div>
                     {userSection}

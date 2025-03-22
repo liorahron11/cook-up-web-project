@@ -8,6 +8,7 @@ import AddComment from "@/app/components/comments/add-comment";
 import {IRecipe} from "@server/interfaces/recipe.interface";
 import {getRecipeById} from "@/app/services/rest.service";
 import Divider from "@/app/login/divider";
+import {getUserFromLocalStorage} from "@/app/services/local-storage.service";
 
 export default function CommentsSection({ recipe }: { recipe: IRecipe }) {
     const [loading, setLoading] = useState<boolean>(true);
@@ -30,6 +31,7 @@ export default function CommentsSection({ recipe }: { recipe: IRecipe }) {
         const fetchCommentsData = async () => {
             try {
                 let senderIds: string[] = recipeData.comments.map((comment: IComment) => comment.senderId);
+                senderIds.push(getUserFromLocalStorage().id);
                 senderIds = Array.from(new Set(senderIds));
                 const usersData: IUser[] = await Promise.all(
                     senderIds.map(async (id: string) => {
