@@ -1,7 +1,7 @@
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {IUser} from "@/app/models/user.interface";
 const apiClient: AxiosInstance = axios.create({
-    baseURL: 'https://node06.cs.colman.ac.il:4000/user',
+    baseURL: 'http://localhost:5000/user',
     headers: {
         'Content-Type': 'application/json',
     },

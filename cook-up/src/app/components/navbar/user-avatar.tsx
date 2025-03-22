@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {JSX} from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import Link from "next/link";
@@ -11,12 +11,18 @@ export interface UserAvatarProps {
 }
 
 
-export default function UserAvatar({ src }: UserAvatarProps): JSX.Element {
+export default function UserAvatar({ src = "avatar.png" }: UserAvatarProps): JSX.Element {
+    const [avatarSrc, setAvatarSrc] = React.useState<string>('');
     const router: AppRouterInstance = useRouter();
     const logout = () => {
         removeUserFromLocalStorage();
         router.push('/login');
     }
+
+    useEffect(() => {
+        setAvatarSrc(src);
+    }, []);
+
 
     return (<Menu as="div" className="relative ml-3">
                 <div>
@@ -25,7 +31,7 @@ export default function UserAvatar({ src }: UserAvatarProps): JSX.Element {
                         <span className="sr-only">פתח תפריט משתמש</span>
                         <img
                             alt=""
-                            src={src}
+                            src={avatarSrc}
                             className="size-8 rounded-full"/>
                     </MenuButton>
                 </div>

@@ -10,7 +10,6 @@ export default function GoogleLoginButton() {
     
     const googleResponseMessage = (credentialResponse: CredentialResponse) => {
         googleSignin(credentialResponse).then((response) => {
-            console.log(response);
             saveUserToLocalStorage({
                 email: response.email,
                 username: response.username,
@@ -18,6 +17,7 @@ export default function GoogleLoginButton() {
                 isGoogleUser: response.isGoogleUser,
                 accessToken: response?.accessToken,
                 profilePictureUrl: response?.profilePictureUrl,
+                refreshToken: response?.refreshToken,
             });
             
             router.push('/');

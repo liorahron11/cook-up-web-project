@@ -51,8 +51,9 @@ export default function LoginCard() {
                     username: userInfo.username,
                     id: userInfo._id,
                     accessToken: userInfo?.accessToken,
-                    profilePictureUrl: userInfo?.profilePictureUrl
-                    });
+                    profilePictureUrl: userInfo?.profilePictureUrl,
+                    refreshToken: response?.refreshToken,
+                });
                 router.push('/');
             });
     };

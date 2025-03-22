@@ -17,7 +17,7 @@ export default function CommentHeader({ user, timestamp, recipe, commentId, relo
                 <p className="inline-flex items-center ml-3 text-sm text-gray-900 dark:text-white font-semibold">
                     <img
                         className="ml-2 w-6 h-6 rounded-full"
-                        src={`https://node06.cs.colman.ac.il:4000/uploads/${profileImage}`}
+                        src={`http://localhost:5000/uploads/${profileImage}`}
                         alt={user.username}/>{user.username}</p>
             </Link>
             <p className="text-sm text-gray-600 dark:text-gray-400">
