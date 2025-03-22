@@ -189,11 +189,11 @@ const parseRecipe = (recipe) => {
 
 const parseComments = (comments: any[]) => {
     return comments.map((comment) => ({
-        id: comment._id.toString(),
-        senderId: comment.senderId,
-        content: comment.content,
-        timestamp: comment.timestamp,
-        comments: parseComments(comment.comments),
+        id: comment?._id?.toString(),
+        senderId: comment?.senderId,
+        content: comment?.content,
+        timestamp: comment?.timestamp,
+        comments: parseComments(comment?.comments),
     }));
 }
 

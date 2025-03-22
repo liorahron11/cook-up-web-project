@@ -11,8 +11,8 @@ export interface UserAvatarProps {
 }
 
 
-export default function UserAvatar({ src = "avatar.png" }: UserAvatarProps): JSX.Element {
-    const [avatarSrc, setAvatarSrc] = React.useState<string>('');
+export default function UserAvatar({ src = "/avatar.png" }: UserAvatarProps): JSX.Element {
+    const [avatarSrc, setAvatarSrc] = React.useState<string>('/avatar.png');
     const router: AppRouterInstance = useRouter();
     const logout = () => {
         removeUserFromLocalStorage();
