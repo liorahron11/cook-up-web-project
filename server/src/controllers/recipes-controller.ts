@@ -15,7 +15,7 @@ import {generateRecipes} from "../queries/gemini-queries";
 const recipesRoutes: Router = express.Router();
 
 const addRecipe = async (req: Request, res: Response) => {
-    const recipe: IRecipe = JSON.parse(req.body.recipe);
+    const recipe: IRecipe = typeof req.body.recipe === 'string' ? JSON.parse(req.body.recipe) : req.body.recipe;
 
     if (recipe) {
         if((req as any).file) {
@@ -101,7 +101,7 @@ const getRecipesBySenderId = async (req: Request, res: Response) => {
 
 const updateRecipe = async (req: Request, res: Response) => {
     const recipeId: string = req.params.id;
-    let updatedRecipe: IRecipe = JSON.parse(req.body.recipe);
+    let updatedRecipe: IRecipe = typeof req.body.recipe === 'string' ? JSON.parse(req.body.recipe) : req.body.recipe;
 
     if (recipeId && updatedRecipe) {
         if((req as any).file) {
