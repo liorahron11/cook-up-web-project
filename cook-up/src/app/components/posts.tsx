@@ -44,18 +44,20 @@ export default function RecipePost({postProps}: {postProps: RecipePostProps}) {
         <PostOptionsButton removeCallback={onRemovePost} editCallback={() => setIsEditMode(true)}></PostOptionsButton>
     ) : <div className=""><h2>{user?.username}</h2></div>;
 
-    const aiLogo: ReactElement = (<div className="flex flex-row items-center justify-center">
-        <Tooltip target=".gemini-logo" position="mouse" />
-        <img className="gemini-logo" src="gemini-logo.svg" alt="נוצר באמצעות AI" data-pr-tooltip="נוצר באמצעות AI" />
+    const aiLogo: ReactElement = (<div className="flex flex-row items-center gap-2">
+        <span>CookUp - AI</span>
+        <div className="flex flex-row items-center justify-center">
+            <Tooltip target=".gemini-logo" position="mouse" />
+            <img className="gemini-logo" src="gemini-logo.svg" alt="נוצר באמצעות AI" data-pr-tooltip="נוצר באמצעות AI" />
+        </div>
     </div>)
 
     if (user) {
         userSection = (<div className="px-6 mt-4">
             <span className="font-medium text-md inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block">
-               <Link className="flex flex-row gap-2" href="/user-profile/[userId]" as={`/user-profile/${user.id}`}>
-                   {recipe?.isAI ? 'CookUp - AI' : user?.username}
-                   {recipe?.isAI ? aiLogo : null}
-               </Link>
+                {recipe?.isAI ? aiLogo :
+                    <Link className="flex flex-row gap-2" href="/user-profile/[userId]" as={`/user-profile/${user.id}`}>{user?.username}</Link>}
+
             </span>
             </div>)
     }
