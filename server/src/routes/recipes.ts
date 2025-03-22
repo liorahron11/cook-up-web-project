@@ -1,15 +1,16 @@
 import express, {Router} from "express";
 import recipesController from "../controllers/recipes-controller";
 import {authMiddleware} from "../middlewares/authMiddleware";
+import {upload} from "../middlewares/imageUploaderMiddleware";
 const recipesRoutes: Router = express.Router();
 
 
 /**
-* @swagger
-* tags:
-*   name: Recipes
-*   description: The Recipes API
-*/
+ * @swagger
+ * tags:
+ *   name: Recipes
+ *   description: The Recipes API
+ */
 
 /**
  * @swagger
@@ -74,7 +75,7 @@ const recipesRoutes: Router = express.Router();
  *         500:
  *           description: Error adding post
  */
-recipesRoutes.post("/", authMiddleware,  recipesController.addRecipe);
+recipesRoutes.post("/", authMiddleware, upload.single('photo') , recipesController.addRecipe);
 
 
 /**
@@ -199,9 +200,98 @@ recipesRoutes.get("/", authMiddleware,recipesController.getRecipesBySenderId);
  *         500:
  *           description: Error updating recipe
  */
+recipesRoutes.put("/:id", authMiddleware, upload.single('photo'), recipesController.updateRecipe);
 
-recipesRoutes.put("/:id", authMiddleware, recipesController.updateRecipe);
+/**
+ * @swagger
+ * paths:
+ *   /recipes/{id}:
+ *     delete:
+ *       summary: Remove a recipe
+ *       description: Remove a recipe by its ID.
+ *       tags:
+ *         - recipes
+ *       security:
+ *         - bearerAuth: []
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
+ *           description: The ID of the recipe to remove
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Recipe removed successfully
+ *         500:
+ *           description: Error removing recipe
+ */
+recipesRoutes.delete("/:id", authMiddleware, recipesController.removeRecipe);
+
+
+/**
+ * @swagger
+ * paths:
+ *   /recipes/like:
+ *     put:
+ *       summary: Update like of recipe
+ *       description: Update the user id in recipes likes array.
+ *       tags:
+ *         - recipes
+ *       security:
+ *         - bearerAuth: []
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                   description: The user id that set like on recipe
+ *                 recipeId:
+ *                   type: string
+ *                   description: The recipe id that the user like
+ *       responses:
+ *         200:
+ *           description: recipe updated successfully
+ *         500:
+ *           description: Error updating recipe
+ */
+
+recipesRoutes.post("/like", authMiddleware, recipesController.likeRecipe);
+/**
+ * @swagger
+ * paths:
+ *   /recipes/like:
+ *     put:
+ *       summary: Update dislike of recipe
+ *       description: Update the user id in recipes likes array.
+ *       tags:
+ *         - recipes
+ *       security:
+ *         - bearerAuth: []
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 userId:
+ *                   type: string
+ *                   description: The user id that set dislike on recipe
+ *                 recipeId:
+ *                   type: string
+ *                   description: The recipe id that the user dislike
+ *       responses:
+ *         200:
+ *           description: recipe updated successfully
+ *         500:
+ *           description: Error updating recipe
+ */
+
+recipesRoutes.post("/dislike", authMiddleware, recipesController.dislikeRecipe);
 
 export default recipesRoutes;
-
-

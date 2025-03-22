@@ -8,7 +8,7 @@ import {OAuth2Client} from 'google-auth-library';
 
 const client = new OAuth2Client();
 const userQueryService: UserQueriesService = new UserQueriesService();
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 type tTokens = {
     accessToken: string,
@@ -19,7 +19,6 @@ const generateToken = (userId: string): tTokens | null => {
     if (!process.env.TOKEN_SECRET) {
         return null;
     }
-    // generate token
     const random = Math.random().toString();
     const accessToken = jwt.sign({
         _id: userId,
@@ -90,7 +89,8 @@ const login = async (req: Request, res: Response) => {
                             refreshToken: tokens.refreshToken,
                             username: retUser.username,
                             email: retUser.email,
-                            _id: retUser._id
+                            _id: retUser._id,
+                            profilePictureUrl: retUser.profilePictureUrl
                         });
                 
                 } else {
@@ -117,12 +117,13 @@ const googleSignin = async (req: Request, res: Response) => {
         const email = payload?.email;
         if(email != null) {
             var user: HydratedDocument<IUser> = await userQueryService.getUserByEmail(email);
-            if(user == null) {
+            if(!user) {
                 user = await userQueryService.addUser({
                     username: payload?.name,
                     password: '',
+                    isGoogleUser: true,
                     email: email,
-                    // imgUrl: payload?.picture
+                    profilePictureUrl: payload?.picture,
                 })
             }
             const tokens = generateToken(user.id);
@@ -132,8 +133,12 @@ const googleSignin = async (req: Request, res: Response) => {
                     refreshToken: tokens.refreshToken,
                     username: user.username,
                     email: user.email,
+                    isGoogleUser: user.isGoogleUser,
+                    profilePictureUrl: user.profilePictureUrl,
                     _id: user._id
                 });
+
+            await userQueryService.updateUserRefreshTokens(user.id, [tokens.refreshToken]);
         } else {
             res.status(500).send("error accourd");
         }
@@ -147,7 +152,7 @@ const refresh = async (req: Request, res: Response) => {
     try {
         const user: HydratedDocument<IUser> = await userQueryService.getUserById(req.body.userId);
 
-        if(user == null) return res.status(403).send("error was accourd");
+        if(user == null) return res.status(403).send("error was occurred");
         if(!user.refreshToken.includes(req.body.token)){
             user.refreshToken = [];
             await userQueryService.updateUserRefreshTokens(user.id, user.refreshToken);

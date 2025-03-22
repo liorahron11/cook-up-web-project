@@ -33,9 +33,10 @@ const getCommentsById = async (req: Request, res: Response) => {
 const addCommentToRecipe = async (req: Request, res: Response) => {
     const recipeId: string = req.params.recipeId;
     const newComment: IComment = req.body.comment;
+    const parentCommentId: string = req.body.parentCommentId;
     if (recipeId) {
 
-        const recipeComments: IComment[] = await addCommentToRecipeId(recipeId, newComment);
+        const recipeComments: IComment[] = await addCommentToRecipeId(recipeId, newComment, parentCommentId);
         if (recipeComments) {
             res.status(201).send("comment added successfully");
         } else {

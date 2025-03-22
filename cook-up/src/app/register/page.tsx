@@ -51,7 +51,14 @@ export default function Register() {
 
         registerUser(userRegisterFields)
             .then((userRegistered) => {
-            saveUserToLocalStorage({email: userRegistered.email, username: userRegistered.username, id: userRegistered._id, accessToken: userRegistered.accessToken});
+            saveUserToLocalStorage({
+                email: userRegistered.email,
+                username: userRegistered.username,
+                id: userRegistered._id,
+                profilePictureUrl: userRegistered.profilePicture,
+                accessToken: userRegistered?.accessToken,
+                refreshToken: response?.refreshToken,
+            });
             router.push('/');
         });
     };

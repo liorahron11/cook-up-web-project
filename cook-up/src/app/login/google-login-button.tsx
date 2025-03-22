@@ -1,3 +1,4 @@
+import React from 'react';
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import {googleSignin} from "@/app/services/rest.service";
 import {useRouter} from "next/navigation";
@@ -8,15 +9,16 @@ export default function GoogleLoginButton() {
     const router: AppRouterInstance = useRouter();
     
     const googleResponseMessage = (credentialResponse: CredentialResponse) => {
-        console.log("good");
-        console.log(credentialResponse);
         googleSignin(credentialResponse).then((response) => {
-            console.log(response);
             saveUserToLocalStorage({
                 email: response.email,
                 username: response.username,
                 id: response._id,
-                accessToken: response.accessToken});
+                isGoogleUser: response.isGoogleUser,
+                accessToken: response?.accessToken,
+                profilePictureUrl: response?.profilePictureUrl,
+                refreshToken: response?.refreshToken,
+            });
             
             router.push('/');
             });
@@ -25,8 +27,8 @@ export default function GoogleLoginButton() {
     const googleErrorMessage = () => {
         console.log("error");
     }
-
+    
     return (
-        <GoogleLogin onSuccess={googleResponseMessage} onFailure={googleErrorMessage} />
+        <GoogleLogin onSuccess={googleResponseMessage} onError={googleErrorMessage} />
         );
 }

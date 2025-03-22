@@ -6,15 +6,15 @@ import {Dropdown, DropdownChangeEvent, DropdownProps} from "primereact/dropdown"
 import {IIngredient} from "@server/interfaces/ingredients.interface";
 import {Button} from "primereact/button";
 
-export default function IngredientsInputGroup({registerAction, onStateChange }: {registerAction: UseFormRegister<any>, onStateChange: (newState: IIngredient[]) => void}) {
-    const [currentIngredients, setCurrentIngredients] = React.useState<IIngredient[]>([{quantity: 0, unit: null, name: ''}]);
+export default function IngredientsInputGroup({registerAction, onStateChange, ingredients }: {registerAction: UseFormRegister<any>, onStateChange: (newState: IIngredient[]) => void, ingredients?: IIngredient[]}) {
+    // @ts-ignore
+    const [currentIngredients, setCurrentIngredients] = React.useState<IIngredient[]>(ingredients ? ingredients : [{quantity: 0, unit: null, name: ''}]);
     const [isHovered, setIsHovered] = React.useState<boolean[]>([false]);
     const ingredientOptions = Object.values(EIngredientUnit).map((unit) => ({
         label: unit,
         value: unit,
     }));
     const prevStateRef = useRef(currentIngredients);
-
     useEffect(() => {
         if (prevStateRef.current !== currentIngredients) {
             onStateChange(currentIngredients);
@@ -22,7 +22,6 @@ export default function IngredientsInputGroup({registerAction, onStateChange }: 
 
         prevStateRef.current = currentIngredients;
     }, [currentIngredients, onStateChange]);
-
 
     const ingredientUnitInputs: (ingredient: IIngredient, index: number) => any = (ingredient: IIngredient, index: number) => {
         const updateUnit = (e: DropdownChangeEvent) => {
@@ -39,6 +38,7 @@ export default function IngredientsInputGroup({registerAction, onStateChange }: 
 
         const quantityInputProps: IInputProps = {
             id: 'quantity' + index,
+            value: ingredient.quantity,
             type: 'number',
             placeholder: 'כמות',
             min: 0,
@@ -51,12 +51,14 @@ export default function IngredientsInputGroup({registerAction, onStateChange }: 
 
         const ingredientUnitDropdownProps: DropdownProps = {
             placeholder: 'יחידות מידה',
+            value: ingredient.unit,
             options: ingredientOptions,
             onChange: updateUnit
         };
 
         const ingredientNameInputProps: IInputProps = {
             id: 'ingredientName' + index,
+            value: ingredient.name,
             type: 'text',
             onChange: (e: any) => {
                 setCurrentIngredients((prevIngredients: IIngredient[]) =>
@@ -76,8 +78,10 @@ export default function IngredientsInputGroup({registerAction, onStateChange }: 
     };
 
     const addIngredient = () => {
+        // @ts-ignore
         setCurrentIngredients([...currentIngredients, {
             quantity: 0,
+            // @ts-ignore
             unit: null,
             name: ''
         }]);

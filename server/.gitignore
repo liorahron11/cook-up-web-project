@@ -123,3 +123,8 @@ dist
 
 package-lock.json
 .idea
+*.jpg
+*.jfif
+*.jpeg
+*.png
+.env

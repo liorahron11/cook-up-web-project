@@ -5,23 +5,23 @@ import { Assistant } from "next/font/google";
 import "./globals.css";
 import Header, {HeaderProps} from "@/app/components/navbar/header";
 import { usePathname } from 'next/navigation';
-import moment from "moment";
-import 'moment/locale/he';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primeicons/primeicons.css';
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import {createGlobalStyle} from "styled-components";
+import {getUserFromLocalStorage,} from "@/app/services/local-storage.service";
 
-moment.locale('he');
 const assistant = Assistant({
   variable: "--font-assistant",
   subsets: ["hebrew"],
   weight: '400'
 });
+const currentStoredUser = getUserFromLocalStorage();
 
 const headerProps: HeaderProps = {
     userAvatarProps: {
-        src: 'https://tecdn.b-cdn.net/img/new/avatars/2.jpg'
+        src: `${currentStoredUser?.profilePictureUrl}`
     },
     navbarItems: [
         {
@@ -35,6 +35,12 @@ const headerProps: HeaderProps = {
     ]
 };
 const noNavbarRoutes: string[] = ['/login', '/register'];
+const GlobalStyle = createGlobalStyle`
+  .p-tooltip {
+      font-family: Assistant, sans-serif;
+    font-size: 14px;
+  }
+`;
 
 export default function RootLayout({
   children,
@@ -62,6 +68,7 @@ export default function RootLayout({
         />
     </head>
       <body className={assistant.className} dir="rtl">
+      <GlobalStyle/>
       <PrimeReactProvider>
           {!isNoNavbarPage && <Header {...headerProps}></Header>}
           {children}
