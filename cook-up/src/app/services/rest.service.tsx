@@ -5,9 +5,10 @@ import {CredentialResponse} from "@react-oauth/google";
 import {IComment} from "@server/interfaces/comment.interface";
 import {extractRecipeImage} from "@/app/services/images.service";
 import {IRecipe} from "@server/interfaces/recipe.interface";
+import {serverUrl} from "@/app/consts";
 const user: LocalStorageUser = getUserFromLocalStorage();
 
-const baseURL:string = 'http://localhost:5000';
+const baseURL:string = serverUrl;
 
 const apiClient: AxiosInstance = axios.create({
     baseURL: baseURL,

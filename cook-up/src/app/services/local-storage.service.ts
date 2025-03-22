@@ -1,4 +1,5 @@
 import {extractProfilePicture} from "@/app/services/images.service";
+import {serverUrl} from "@/app/consts";
 
 export interface LocalStorageUser {
     id: string;
@@ -13,7 +14,7 @@ const USER_KEY: string = 'user';
 
 export const saveUserToLocalStorage = (user: LocalStorageUser) => {
     if(!user.isGoogleUser && user?.profilePictureUrl){
-        const fullUrl: any =  'http://localhost:5000/uploads/' + extractProfilePicture(user?.profilePictureUrl);
+        const fullUrl: any =  `${serverUrl}/uploads/` + extractProfilePicture(user?.profilePictureUrl);
         user.profilePictureUrl = fullUrl;
     }
 

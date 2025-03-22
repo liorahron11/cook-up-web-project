@@ -22,9 +22,10 @@ require('dotenv').config();
         version: "1.0.0",
         description: "REST server including authentication using JWT",
     },
-    servers: [{url: `http://localhost:${process.env.PORT}`,},
-            {url: `http://localhost:5000`,},
-            {url: `http://localhost:5000`,}, {url: `http://localhost:5000`,}
+        servers:
+            [{url: `http://localhost:${process.env.PORT}`,},
+            {url: `http://10.10.246.6`,},
+            {url: `https://10.10.246.6`,}, {url: `https://node06.cs.colman.ac.il:4000`,}
         ],
     },
     apis: ["./src/routes/*.ts"],

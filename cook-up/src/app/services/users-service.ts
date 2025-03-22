@@ -1,7 +1,8 @@
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {IUser} from "@/app/models/user.interface";
+import {serverUrl} from "@/app/consts";
 const apiClient: AxiosInstance = axios.create({
-    baseURL: 'http://localhost:5000/user',
+    baseURL: `${serverUrl}/user`,
     headers: {
         'Content-Type': 'application/json',
     },
