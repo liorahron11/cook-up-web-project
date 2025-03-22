@@ -12,7 +12,7 @@ export interface LocalStorageUser {
 const USER_KEY: string = 'user';
 
 export const saveUserToLocalStorage = (user: LocalStorageUser) => {
-    if(user.isGoogleUser != true && user?.profilePictureUrl){
+    if(!user.isGoogleUser && user?.profilePictureUrl){
         const fullUrl: any =  'http://localhost:5000/uploads/' + extractProfilePicture(user?.profilePictureUrl);
         user.profilePictureUrl = fullUrl;
     }
