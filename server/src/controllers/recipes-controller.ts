@@ -183,7 +183,8 @@ const parseRecipe = (recipe) => {
         ingredients: recipe.ingredients,
         instructions: recipe.instructions,
         comments: parseComments(recipe.comments),
-        image: recipe.image
+        image: recipe.image,
+        likes: recipe.likes
     };
 }
 
