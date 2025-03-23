@@ -1,13 +1,26 @@
-import React, {ReactElement, useState} from "react";
+import React, {ReactElement, useEffect, useState} from "react";
 import {IComment} from "@server/interfaces/comment.interface";
 import CommentHeader from "@/app/components/comments/comment-header";
 import {IUser} from "@/app/models/user.interface";
 import AddComment from "@/app/components/comments/add-comment";
 import {IRecipe} from "@server/interfaces/recipe.interface";
+import {getUserByID} from "@/app/services/users-service";
 
 export default function Comment({ comment, user, recipe, reloadEvent }: { comment: IComment, user: IUser, recipe: IRecipe, reloadEvent: () => void }) {
+    const [users, setUsers] = useState<IUser[]>([]);
     const [showReplySection, setShowReplySection] = useState<boolean>(false);
     const replySection: ReactElement = (<AddComment recipe={recipe} comment={comment} reloadEvent={reloadEvent}></AddComment>);
+    const getReplyUser = (reply: IComment) => users.find((user: IUser) => user?.id === reply?.senderId);
+    useEffect(() => {
+        const fetchReplyUser = async (reply: IComment) => {
+            if (reply?.senderId) {
+                const replyUser: IUser = await getUserByID(reply.senderId);
+                setUsers([...users, replyUser]);
+            }
+        }
+
+        comment?.comments.forEach((reply: IComment) => fetchReplyUser(reply));
+    }, []);
 
     return (<article className="p-6 text-base bg-white rounded-lg dark:bg-gray-900">
                     <CommentHeader commentId={comment.id as string} recipe={recipe} user={user} timestamp={comment.timestamp} reloadEvent={reloadEvent}></CommentHeader>
@@ -29,7 +42,7 @@ export default function Comment({ comment, user, recipe, reloadEvent }: { commen
 
                     {comment?.comments?.map((comment: IComment) =>
                         (<div key={comment.id} className="mr-2">
-                            <Comment key={comment.id} recipe={recipe} reloadEvent={reloadEvent} comment={comment} user={user}></Comment>
+                            <Comment key={comment.id} recipe={recipe} reloadEvent={reloadEvent} comment={comment} user={getReplyUser(comment) as IUser}></Comment>
                         </div>))}
     </article>);
 }
