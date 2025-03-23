@@ -29,6 +29,6 @@ export default function CommentHeader({ user, timestamp, recipe, commentId, relo
                 {moment(timestamp).format('DD-MM-YYYY HH:mm')}
             </p>
         </div>
-        {user.id === getUserFromLocalStorage().id && commentActions}
+        {user?.id === getUserFromLocalStorage()?.id && commentActions}
     </footer>);
 }
